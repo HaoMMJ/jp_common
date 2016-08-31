@@ -4,6 +4,11 @@ class CollectController < ApplicationController
   $count = 0
 
   def index
+    save_all
+    @words = Word.all
+  end
+
+  def save_all
     Word.all.each { |w|
       sleep 10
       if w.raw.blank?
@@ -12,9 +17,8 @@ class CollectController < ApplicationController
         $count = $count + 1
       end  
     }
-
-    @words = Word.all
   end
+
   def save_raw(word)
     kanji = word.kanji
     url = Addressable::URI.parse("http://mazii.net/api/search/#{kanji}/10/1").normalize.to_str
