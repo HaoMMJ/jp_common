@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
 class CollectController < ApplicationController
   require "addressable/uri"
+  $count = 0
 
   def index
     Word.all.each { |w|
       sleep 10
-      save_raw(w) if w.raw.blank?
+      if w.raw.blank?
+        save_raw(w)
+      else
+        $count = $count + 1
+      end  
     }
 
     @words = Word.all
   end
-  $count = 0
   def save_raw(word)
     kanji = word.kanji
     url = Addressable::URI.parse("http://mazii.net/api/search/#{kanji}/10/1").normalize.to_str
