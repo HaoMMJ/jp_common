@@ -5,4 +5,5 @@ Rails.application.routes.draw do
   get 'collect_all'   => 'collect#collect_all'
   get 'save'    => 'collect#save'
   get 'fix_302' => 'collect#fix_302'
+  get 'filter'  => 'collect#filter'
 end

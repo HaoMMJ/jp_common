@@ -55,4 +55,36 @@ class CollectController < ApplicationController
       puts "Save #{$count} #{word.kanji}"
     end
   end
+
+  def filter
+    # 1.upto(5) do |level|
+    #   filter_words(level)
+    #   filter_kanji(level)
+    # end
+    filter_words 5
+  end
+
+  def filter_words(level)
+    File.open("raw_data/words/n#{level}", 'r') do |f1|
+      File.open("filtered_data/words/n#{level}", 'w') do |f2|
+        while line = f1.gets
+          latin = line =~ /\w/
+          puts "#{line} #{latin}"
+          f2.puts line if latin == nil && latin.present?
+        end
+      end
+    end  
+  end
+
+  def filter_kanji(level)
+    File.open("raw_data/kanji/n#{level}", 'r') do |f1|
+      File.open("filtered_data/kanji/n#{level}", 'w') do |f2|
+        count = 0
+        while line = f1.gets
+          f2.puts line if count % 4 == 0
+          count += 1
+        end
+      end  
+    end  
+  end
 end
