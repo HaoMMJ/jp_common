@@ -13,4 +13,6 @@ Rails.application.routes.draw do
 
   get 'common_list' => 'show#common_list'
   get 'create_meaning' => 'show#create_meaning'
+  get 'filter_15000' => 'show#filter_15000'
+  get 'create_jisho_meaning' => 'show#create_jisho_meaning'
 end

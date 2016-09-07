@@ -51,6 +51,19 @@ class ShowController < ApplicationController
     binding.pry
   end
 
+  def create_jisho_meaning
+    words = Word.all.select{|w| raw = eval(w.raw); raw["found"].nil?}
+    File.open("filtered_data/consider/jisho", 'w') do |f2|
+      words.each do |w|
+        raw = eval(w.raw)
+        data = raw["data"].first["senses"].first["english_definitions"]
+        # data = raw["data"].first["japanese"]
+        puts "#kanji #{w.kanji}, meaning #{data}"
+        f2.puts "id #{w.id}. kanji #{w.kanji}, meaning #{data}"
+      end
+    end
+  end
+
   def is_hiragana(w)
     !!(w =~ /^([\p{Hiragana}]*)$/)
   end
@@ -61,5 +74,23 @@ class ShowController < ApplicationController
 
   def is_kanji(w)
     !is_katakana(w) && !is_hiragana(w)
+  end
+
+  def is_japanese(w)
+    !!(w =~ /^([\p{Hiragana}\p{Katakana}\p{Han}]*)$/)
+  end
+
+  def filter_15000
+    File.open("raw_data/common/15000", 'r') do |f1|
+      File.open("filtered_data/common/15000", 'w') do |f2|
+        count = 0
+        while line = f1.gets
+          word = line.gsub("\n",'')
+          next if !is_japanese(word) && !is_katakana(word) && !is_katakana(word)
+          f2.puts line
+          count += 1
+        end
+      end  
+    end  
   end
 end
