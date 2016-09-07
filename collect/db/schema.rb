@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160902180035) do
+ActiveRecord::Schema.define(version: 20160906174909) do
+
+  create_table "examples", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "meaning_id"
+    t.text    "content",       limit: 65535
+    t.text    "mean",          limit: 65535
+    t.text    "transcription", limit: 65535
+    t.index ["meaning_id"], name: "index_examples_on_meaning_id", using: :btree
+  end
 
   create_table "jlpt_kanjis", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string  "kanji"

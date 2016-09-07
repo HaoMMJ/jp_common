@@ -136,11 +136,11 @@ class CollectController < ApplicationController
   end
 
   def fix_302
-    not_found_words = Word.all.select{|w| x = eval(w.raw); x["status"] == 302}
+    not_found_words = Word.all.select{|w| x = eval(w.raw); x["found"].nil?}
     count = 0
     not_found_words.each { |w|
       save_raw(w, true)
-      # sleep 5
+      sleep 2
     }
   end
 
@@ -163,7 +163,8 @@ class CollectController < ApplicationController
   def save_raw(word, fix=false)
     kanji = word.kanji
     if fix
-      url = Addressable::URI.parse("http://mazii.net/api/gsearch/#{kanji}/ja/vi").normalize.to_str
+      # url = Addressable::URI.parse("http://mazii.net/api/gsearch/#{kanji}/ja/vi").normalize.to_str
+      url = Addressable::URI.parse("http://jisho.org/api/v1/search/words?keyword=#{kanji}").normalize.to_str
     else
       url = Addressable::URI.parse("http://mazii.net/api/search/#{kanji}/10/1").normalize.to_str
     end
