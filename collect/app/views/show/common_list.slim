@@ -1,0 +1,18 @@
+h1 Hello world
+table
+  thead
+    tr
+      td index
+      td Kanji
+      td kana
+      td meaning
+    - @words.each.with_index(1) do |w, index|
+      tr
+        td= index
+        td= w.kanji
+        td style="width: 200px;"
+          = w.kana
+        td
+          - w.meanings.each.with_index(1) do |m, i|
+            = "#{i}. #{m.content} "
+  

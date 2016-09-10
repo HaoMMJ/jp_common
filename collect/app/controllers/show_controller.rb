@@ -1,6 +1,26 @@
 # -*- coding: utf-8 -*-
 class ShowController < ApplicationController
   def common_list
+    word_ids = Meaning.all.map(&:word_id).compact.uniq
+    @words   = Word.includes(:meanings).where('id in (?)', word_ids)
+    hiragana_filtered_list = ["する", "から", "こと", "よる", "など", "この", "その", "まで", "もの", "これ", "よう", "より", "おく", "でも", "それ", "しかし", "つく", "のみ", "なお", "および", "だけ", "そして", "ながら", "それぞれ", "うち", "かつて", "ここ", "そこ", "ところ", "または", "ほぼ", "あるいは", "しか", "いずれ", "まま", "このよう", "そのまま", "つつ", "すぐ", "やる", "もう", "いわゆる", "しばしば", "まだ", "また", "なる", "きっかけ", "どう", "かなり", "すなわち", "だろう", "なら", "べき", "わけ", "かつ", "やや", "どちら", "やがて", "ちなみに", "らしい", "くらい", "ばかり", "もしくは", "しかしながら", "こちら", "もたらす", "そう", "むら", "こう", "こそ", "どの", "よす", "どこ", "つまり", "こうして", "ところが", "さえ", "そんな", "あらゆる", "かも", "ようやく", "やはり", "あなた", "ないし", "どのよう", "すら", "こなす", "たばこ", "もし", "かい", "しかも", "もちろん", "なり", "やってくる", "もっと", "さくら", "あくまで", "すずき", "とても", "どれ", "あの", "みどり", "とりわけ", "いまだ", "さようなら", "ならびに", "それほど", "なかなか", "たけし", "ずれる", "ずっと", "そもそも", "つぐ", "ため", "もはや", "じゃ", "したためる", "せい", "よって", "くぐる", "ない", "どのように", "どんな", "いけない", "りす", "いう", "いまだに", "たび", "いつ", "すると", "いかなる", "おおよそ", "あくまでも", "ひどい", "もっとも", "けど", "ひれ", "あまり", "いきなり", "とる", "ゆっくり", "たとえ", "おはよう", "うどん", "さほど", "きりん", "まるで"]
+    File.open("quizlet/common/10000", 'w') do |f|
+      @words.all.each do |w|
+        line = ""
+        if (is_hiragana(w.kanji) && hiragana_filtered_list.include?(w.kanji) )
+          line = "#{w.kanji}\t#{w.meanings.first.content}"
+        else
+          kana = w.kana.present? ? "(#{w.kana})" : ""
+          meanings = w.meanings.map(&:content).join("; ")
+          # w.meanings.each do |m|
+          #   m
+          # end
+          line = "#{w.kanji} #{kana}\t#{meanings}"
+        end
+          
+        f.puts line
+      end
+    end
   end
   # x = eval(JlptWord.offset(rand(JlptWord.count)).limit(1).first.raw)
   def create_meaning
