@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160906174909) do
+ActiveRecord::Schema.define(version: 20160911170900) do
+
+  create_table "dic_vocabs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "dictionary_id"
+    t.integer "vocabulary_id"
+    t.index ["dictionary_id"], name: "index_dic_vocabs_on_dictionary_id", using: :btree
+    t.index ["vocabulary_id"], name: "index_dic_vocabs_on_vocabulary_id", using: :btree
+  end
+
+  create_table "dictionaries", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string  "name"
+    t.integer "level"
+  end
 
   create_table "examples", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "meaning_id"
@@ -46,10 +58,21 @@ ActiveRecord::Schema.define(version: 20160906174909) do
     t.integer "word_id"
   end
 
+  create_table "vocabularies", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string  "kanji"
+    t.string  "kana"
+    t.text    "raw",         limit: 65535
+    t.text    "cn_mean",     limit: 65535
+    t.text    "mean",        limit: 65535
+    t.integer "level"
+    t.string  "from_source",               default: "mazi"
+  end
+
   create_table "words", unsigned: true, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.string "kanji"
-    t.string "kana"
-    t.text   "raw",   limit: 65535
+    t.string  "kanji"
+    t.string  "kana"
+    t.text    "raw",      limit: 65535
+    t.boolean "is_jisho"
   end
 
 end
