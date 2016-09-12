@@ -1,0 +1,15 @@
+= form_for(@dic, url: create_list_path, method: :POST) do |f|
+  table
+    tr
+      td Name
+      td
+        = f.text_field :name
+    tr
+      td Level
+      td 
+        = f.text_field :level  
+    tr
+      td   
+        = f.submit "Save"
+
+h1 List

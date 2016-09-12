@@ -24,4 +24,10 @@ Rails.application.routes.draw do
   get 'create_minna_dictionary' => 'minna#create_minna_dictionary'
   get 'create_minna_quizlet' => 'minna#create_minna_quizlet'
 
+
+  #Dictionary
+  get  'create_list' => 'dictionary#create_list_form'
+  post 'create_list' => 'dictionary#create_list'
+  get  'update_list/:id' => 'dictionary#update_list_form', as: :dictionary_detail
+  post 'update_list/:id' => 'dictionary#update_list', as: :dictionary_update
 end
