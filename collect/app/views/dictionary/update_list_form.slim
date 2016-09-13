@@ -1,4 +1,4 @@
-= form_for(@dic, url: create_list_path, method: :POST) do |f|
+= form_for(@dic, url: dictionary_update_path, method: :POST) do |f|
   table
     tr
       td Name
@@ -13,3 +13,28 @@
         = f.submit "Save"
 
 h1 List
+table
+  tr  
+    td Order
+    td Kanji
+    td Kana
+    td Kanji Meaning
+    td style="width: 650px" Mean
+    td Level
+  - @dic.vocabularies.each.with_index(1) do |w, index|
+    tr
+      td= index
+      td
+        = hidden_field_tag :vocab_id, w.id
+        = text_field_tag :kanji, w.kanji
+      td
+        = text_field_tag :kana, w.kana
+      td
+        = text_field_tag :cn_mean, w.cn_mean
+      td 
+        = text_field_tag :mean, w.mean, style: "width: 650px"
+      td
+        = w.level
+          
+  
+

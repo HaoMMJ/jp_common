@@ -14,6 +14,14 @@ class DictionaryController < ApplicationController
     @dic = Dictionary.find(params[:id])
   end
 
+  def update_dic_info
+    @dic = Dictionary.find(params[:id])
+    dic_params = params["dictionary"]
+    @dic.name = dic_params["name"]
+    @dic.level = dic_params["level"]
+    @dic.save!
+  end
+ 
   def update_list
   end
 end

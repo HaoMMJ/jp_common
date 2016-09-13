@@ -38,6 +38,18 @@ class MinnaController < ApplicationController
     end
   end
 
+  def fix_level
+    minna = Dictionary.where("name = ?", "Minna").first
+    words = minna.vocabularies
+    words.each do |w|
+      jlpt_words = JlptWord.where("word = ?", w.kanji)
+      if jlpt_words.length > 1
+        w.level = jlpt_words.map(&:level).max
+        w.save!
+      end
+    end
+  end
+
   def create_minna_dictionary
     Vocabulary.all.each do |v|
       DicVocab.create!(dictionary_id: 1, vocabulary_id: v.id)

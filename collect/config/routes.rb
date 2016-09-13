@@ -23,11 +23,13 @@ Rails.application.routes.draw do
   get 'create_minna_raw_data' => 'minna#create_minna_raw_data'
   get 'create_minna_dictionary' => 'minna#create_minna_dictionary'
   get 'create_minna_quizlet' => 'minna#create_minna_quizlet'
+  get 'fix_minna_level' => 'minna#fix_level'
 
 
   #Dictionary
   get  'create_list' => 'dictionary#create_list_form'
   post 'create_list' => 'dictionary#create_list'
   get  'update_list/:id' => 'dictionary#update_list_form', as: :dictionary_detail
-  post 'update_list/:id' => 'dictionary#update_list', as: :dictionary_update
+  post 'update_dic_info/:id' => 'dictionary#update_dic_info', as: :dictionary_update
+  post 'update_list' => 'dictionary#update_list'
 end
