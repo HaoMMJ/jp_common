@@ -1,0 +1,2 @@
+class RawDictionary < ApplicationRecord
+end
