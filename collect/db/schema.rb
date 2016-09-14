@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160911170900) do
+ActiveRecord::Schema.define(version: 20160914112301) do
 
   create_table "dic_vocabs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "dictionary_id"
@@ -56,6 +56,12 @@ ActiveRecord::Schema.define(version: 20160911170900) do
   create_table "meanings", unsigned: true, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.text    "content", limit: 65535
     t.integer "word_id"
+  end
+
+  create_table "raw_dictionaries", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "word"
+    t.text   "raw",    limit: 65535
+    t.string "source",               default: "mazii"
   end
 
   create_table "vocabularies", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

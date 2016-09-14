@@ -7,7 +7,7 @@ class CreateVocabularies < ActiveRecord::Migration[5.0]
       t.text   :cn_mean
       t.text   :mean
       t.integer :level
-      t.string :from_source, default: "mazi"
+      t.string :from_source, default: "mazii"
     end
   end
 end

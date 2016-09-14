@@ -12,29 +12,36 @@
       td   
         = f.submit "Save"
 
+h1 Search
+= hidden_field_tag :dic_id, @dic.id
+= text_field_tag :search
+br
+#search_info style="color:red;" Input some JP text and see magical
+br
 h1 List
-table
-  tr  
-    td Order
-    td Kanji
-    td Kana
-    td Kanji Meaning
-    td style="width: 650px" Mean
-    td Level
-  - @dic.vocabularies.each.with_index(1) do |w, index|
-    tr
-      td= index
-      td
-        = hidden_field_tag :vocab_id, w.id
-        = text_field_tag :kanji, w.kanji
-      td
-        = text_field_tag :kana, w.kana
-      td
-        = text_field_tag :cn_mean, w.cn_mean
-      td 
-        = text_field_tag :mean, w.mean, style: "width: 650px"
-      td
-        = w.level
-          
-  
+#vocalbularies
+  table#dictionary_tbl
+    tr  
+      td Order
+      td Kanji
+      td Kana
+      td Kanji Meaning
+      td style="width: 650px" Mean
+      td Level
+    - @dic.vocabularies.each.with_index(1) do |w, index|
+      tr
+        td= index
+        td
+          = hidden_field_tag :vocab_id, w.id
+          = text_field_tag :kanji, w.kanji
+        td
+          = text_field_tag :kana, w.kana
+        td
+          = text_field_tag :cn_mean, w.cn_mean
+        td 
+          = text_field_tag :mean, w.mean, style: "width: 650px"
+        td
+          = w.level
+            
+    
 
