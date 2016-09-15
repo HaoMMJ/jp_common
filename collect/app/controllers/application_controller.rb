@@ -49,36 +49,49 @@ class ApplicationController < ActionController::Base
     RawDictionary.create!(word: word, raw: raw, source: source)
   end
 
-  def extract_mazii_raw(json)
+  def extract_mazii_raw(search_word, json)
+    kanji = 
+    vocabulary_object(kanji, kana, cn_mean, mean)
   end
 
-  def extract_jisho_raw(json)
+  def extract_jisho_raw(search_word,json)
+    vocabulary_object(kanji, kana, cn_mean, mean)
   end
 
-  def extract_google_raw(json)
+  def extract_google_raw(search_word, json)
+    vocabulary_object(kanji, kana, cn_mean, mean)
   end
 
+  def vocabulary_object(kanji, kana, cn_mean, mean)
+    {
+      kanji: kanji,
+      kana: kana,
+      cn_mean: cn_mean,
+      mean: mean
+    }
+  end
 
   def create_vocabulary_from_raw(dic_id, search_word, raw, source)
     json = raw.is_a?(String) ? eval(raw) : raw
     case source
     when "mazii"
-      word = extract_mazii_raw(json)
+      word = extract_mazii_raw(search_word, json)
     when "jisho"
-      word = extract_jisho_raw(json)
+      word = extract_jisho_raw(search_word, json)
     when "google"
-      word = extract_google_raw(json)
+      word = extract_google_raw(search_word, json)
     end
     return nil if word.blank?
     level = JlptWord.where("word = ?", w["search_word"]).map(&:level).max || 1
 
     vocab = Vocabulary.new
     vocab.kanji       = word[:kanji]
-    vocab.kana        = word[:hiragana]
+    vocab.kana        = word[:kana]
     vocab.cn_mean     = word[:cn_mean]
     vocab.mean        = word[:mean]
-    vocab.level       = word[:level]
-    vocab.from_source = "source"
+    vocab.level       = level
+    vocab.from_source = source
     vocab.save!
+    vocab
   end
 end

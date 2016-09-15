@@ -33,7 +33,7 @@ class DictionaryController < ApplicationController
       missing_in_raw_dictionary = data.blank?
       source = 'mazii'
       data = search_from_mazi(params['word']) if data.blank?
-      if data.blank?
+      if data.blank? || !eval(data)["found"]
         data = search_from_jisho(params['word'])
         source = 'jisho'
       end

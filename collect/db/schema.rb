@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160914112301) do
+ActiveRecord::Schema.define(version: 20160914173549) do
 
   create_table "dic_vocabs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "dictionary_id"
@@ -71,7 +71,7 @@ ActiveRecord::Schema.define(version: 20160914112301) do
     t.text    "cn_mean",     limit: 65535
     t.text    "mean",        limit: 65535
     t.integer "level"
-    t.string  "from_source",               default: "mazi"
+    t.string  "from_source",               default: "mazii"
   end
 
   create_table "words", unsigned: true, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
