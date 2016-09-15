@@ -51,3 +51,4 @@ gem 'rest-client', '2.0.0'
 gem 'addressable', '2.4.0'
 
 gem 'json'
+gem 'romaji'

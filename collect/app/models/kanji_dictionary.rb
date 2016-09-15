@@ -1,0 +1,2 @@
+class KanjiDictionary < ApplicationRecord
+end

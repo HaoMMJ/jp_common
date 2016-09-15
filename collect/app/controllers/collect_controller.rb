@@ -3,6 +3,41 @@ class CollectController < ApplicationController
   require "addressable/uri"
   $count = 0
 
+  def fix_raw_dictionary_source
+    RawDictionary.all.each do |w|
+      h = eval(w.raw)
+      if h["found"] == false
+        json = search_from_jisho(w.word)
+        if json.blank?
+          data = search_from_google(params['word'])
+          w.raw = data
+          w.source = 'google'
+          w.save!
+        else
+          w.raw = json
+          w.source = 'jisho'
+          w.save!
+        end
+        sleep 5
+      end
+    end
+  end
+
+  def import_kanji_dictionary
+    # File.open("filtered_data/kanji/yoyo_kanji", 'r') do |f|
+    #   while line = f.gets
+    #     r = line.split("    ")
+    #     KanjiDictionary.create!(kanji: r[1], kanji_mean: r[2], mean: r[3], onyomi: r[4])
+    #     # puts "#{r[0]}, #{r[1]}, #{r[2]}, #{r[3]}, #{r[4]}}"
+    #   end
+    # end
+
+    KanjiDictionary.all.each do |w|
+      w.onyomi = romaji_to_kana(w.onyomi.gsub("\n",''))
+      w.save!
+    end
+  end
+
   def collect_all
     save_all
     @words = Word.all

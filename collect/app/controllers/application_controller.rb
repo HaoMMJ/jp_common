@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   require "addressable/uri"
+  require "romaji"
 
   def is_hiragana(w)
     !!(w =~ /^([\p{Hiragana}]*)$/)
@@ -41,19 +42,33 @@ class ApplicationController < ActionController::Base
 
   # http://mazii.net/api/gsearch/%E8%AA%AD%E8%A7%A3/ja/vi
   def search_from_google(word)
-    url = Addressable::URI.parse("http://jisho.org/api/v1/search/words?keyword=#{word}").normalize.to_str
+    url = Addressable::URI.parse("http://mazii.net/api/gsearch/#{word}/ja/vi").normalize.to_str
     request_word(url)
   end
 
   def update_raw_dictionary(word, raw, source)
-    RawDictionary.create!(word: word, raw: raw, source: source)
+    dic = RawDictionary.where("word = ?", word)
+    dic = RawDictionary.new(word: word) if dic.blank?
+    dic.raw = raw
+    dic.source = source
+    dic.save!
   end
 
   def get_kanji_mean(kanji)
-    #Manual create kanji
+    a = kanji.split("")
+    means = []
+    a.each do |c|
+      km = KanjiDictionary.where("kanji = ?", c).first.try(:kanji_mean)
+      next if km.blank?
+      kms = km.split(",")
+      m = kms.length > 1 ? "#{kms[0]}(#{kms[1]})" : km
+      means << m.capitalize
+    end
+    kanji_mean = means.length > 0 ? means.join(" ") : means[0]
+    kanji_mean
   end
 
-  def extract_mazii_raw(search_word, json)
+  def extract_mazii_json(search_word, json)
     data = json["data"]
 
     word = data.select{|w| w["word"] == search_word}.first
@@ -69,11 +84,33 @@ class ApplicationController < ActionController::Base
     vocabulary_object(kanji, kana, cn_mean, mean)
   end
 
-  def extract_jisho_raw(search_word,json)
+  def extract_jisho_json(search_word,json)
+    data = json['data'].first
+    if is_kanji(search_word)
+      kanji = search_word
+      jp = data["japanese"].select{|w| w['word'] == kanji || (w['word'].present? && w['word'].include?(kanji))}.first
+      kana = jp.present? ? jp["reading"] : ""
+    else
+      kana = search_word
+      jp = data["japanese"].select{|w| w['reading'] == kana || (w['reading'].present? && w['reading'].include?(kana))}.first
+      kanji = jp.present? ? jp["word"] : ""
+    end
+    cn_mean = kanji.present? ? get_kanji_mean(kanji) : ""
+    mean = data["senses"].first["english_definitions"].join(",")
     vocabulary_object(kanji, kana, cn_mean, mean)
   end
 
-  def extract_google_raw(search_word, json)
+  def extract_google_json(search_word, json)
+    data = eval(json["data"])
+    if is_kanji(search_word)
+      kanji = search_word
+      kana  = ""
+    else
+      kanji = ""
+      kana = search_word
+    end
+    cn_mean = kanji.present? ? get_kanji_mean(kanji) : ""
+    mean = data[:sentences].first[:trans]
     vocabulary_object(kanji, kana, cn_mean, mean)
   end
 
@@ -86,19 +123,19 @@ class ApplicationController < ActionController::Base
     }
   end
 
-  def create_vocabulary_from_raw(dic_id, search_word, raw, source)
+  def create_vocabulary_from_raw(search_word, raw, source)
     return nil unless is_japanese(search_word)
     json = raw.is_a?(String) ? eval(raw) : raw
     case source
     when "mazii"
-      word = extract_mazii_raw(search_word, json)
+      word = extract_mazii_json(search_word, json)
     when "jisho"
-      word = extract_jisho_raw(search_word, json)
+      word = extract_jisho_json(search_word, json)
     when "google"
-      word = extract_google_raw(search_word, json)
+      word = extract_google_json(search_word, json)
     end
     return nil if word.blank?
-    level = JlptWord.where("word = ?", w["search_word"]).map(&:level).max || 1
+    level = JlptWord.where("word = ?", search_word).map(&:level).max || 1
 
     vocab = Vocabulary.new
     vocab.kanji       = word[:kanji]
@@ -109,5 +146,38 @@ class ApplicationController < ActionController::Base
     vocab.from_source = source
     vocab.save!
     vocab
+  end
+
+  def romaji_to_kana(str)
+    Romaji.romaji2kana(str, :kana_type => :hiragana)
+  end
+
+  def import_to_vocabularies(word)
+    vocabs = Vocabulary.where('kanji = ? or kana = ?', word, word)
+    if vocabs.length == 0
+      data = search_from_raw_dictionary(word)
+      missing_in_raw_dictionary = data.blank?
+      source = 'mazii'
+      data = search_from_mazi(word) if data.blank?
+      if data.blank? || !eval(data)["found"]
+        data = search_from_jisho(word)
+        source = 'jisho'
+      end
+
+      if data.blank? || data["data"].blank?
+        data = search_from_google(word)
+        source = 'google'
+      end
+
+      if data.present?
+        json = data.is_a?(String) ? eval(data) : data
+        update_raw_dictionary(word, data, source) if missing_in_raw_dictionary
+        create_vocabulary_from_raw(word, json, source)
+      else
+        File.open("filtered_data/not_found/import_to_vocabularies", 'a') do |f|
+          f.puts word
+        end
+      end
+    end
   end
 end

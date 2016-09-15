@@ -6,7 +6,8 @@ class DictionaryController < ApplicationController
 
   def create_list
     p  = params["dictionary"]
-    dic = Dictionary.first_or_create(name: p["name"], level: p["level"].to_i)
+    dic = Dictionary.where(name: p["name"], level: p["level"].to_i).first
+    dic = Dictionary.create!(name: p["name"], level: p["level"].to_i) if dic.blank?
     redirect_to dictionary_detail_path(dic.id)
   end
 
@@ -23,7 +24,6 @@ class DictionaryController < ApplicationController
   end
  
   def update_list
-    binding.pry
     vocab_ids  = DicVocab.where(dictionary_id: params["id"]).map(&:vocabulary_id)
     vocabs     = Vocabulary.where('id in (?) and (kanji = ? or kana = ?)', vocab_ids, params['word'], params['word'])
     if vocabs.length > 0
@@ -38,20 +38,22 @@ class DictionaryController < ApplicationController
         source = 'jisho'
       end
 
-      if data.blank?
+      if data.blank? || data["data"].blank?
         data = search_from_google(params['word'])
         source = 'google'
       end
 
       if data.present?
+        json = data.is_a?(String) ? eval(data) : data
         update_raw_dictionary(params['word'], data, source) if missing_in_raw_dictionary
-        new_word = import_new_word(params["id"], params['word'], data, source)
+        new_word = import_new_word(params["id"], params['word'], json, source)
+        render json: { "not_found" => true } if new_word.blank?
         render json: { 'result' => {
-            kanji:   data.kanji,
-            kana:    data.kana,
-            cn_mean: data.cn_mean,
-            mean:    data.mean,
-            level:   data.level
+            kanji:   new_word.kanji.to_s,
+            kana:    new_word.kana.to_s,
+            cn_mean: new_word.cn_mean.to_s,
+            mean:    new_word.mean.to_s,
+            level:   new_word.level.to_s
           } 
         }
       else
@@ -61,8 +63,14 @@ class DictionaryController < ApplicationController
   end
 
   def import_new_word(dic_id, search_word, raw, source)
-    vocab = create_vocabulary_from_raw(dic_id, search_word, raw, source)
-    binding.pry if vocab.blank?
-    DicVocab.create!(dictionary_id: dic_id, vocabulary_id: vocab.id)
+    vocab = create_vocabulary_from_raw(search_word, raw, source)
+    DicVocab.create!(dictionary_id: dic_id, vocabulary_id: vocab.id) if vocab.present?
+    vocab
+  end
+
+  def import_data_to_vocabs
+    RawDictionary.all.map(&:word).each do |w|
+      import_to_vocabularies(w)
+    end
   end
 end

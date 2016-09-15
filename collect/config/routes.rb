@@ -18,6 +18,8 @@ Rails.application.routes.draw do
   get 'create_jisho_meaning' => 'collect#create_jisho_meaning'
   get 'create_missing_meanings' => 'collect#create_missing_meanings'
   get 'fix_not_found' => 'collect#fix_not_found'
+  get 'import_kanji_dictionary' => 'collect#import_kanji_dictionary'
+  get 'fix_raw_dictionary_source' => 'collect#fix_raw_dictionary_source'
 
   #Minna
   get 'create_minna_raw_data' => 'minna#create_minna_raw_data'
@@ -32,4 +34,16 @@ Rails.application.routes.draw do
   get  'update_list/:id' => 'dictionary#update_list_form', as: :dictionary_detail
   post 'update_dic_info/:id' => 'dictionary#update_dic_info', as: :dictionary_update
   post 'update_list' => 'dictionary#update_list'
+  get 'import_data_to_vocabs' => 'dictionary#import_data_to_vocabs'
+
+  #Reading
+  get 'create_course_form' => 'reading#create_course_form'
+  post 'create_course' => 'reading#create_course'
+  get 'update_course_form' => 'reading#update_course_form'
+  post 'update_course' => 'reading#update_course'
+  get 'create_lession_form' => 'reading#create_lession_form'
+  get 'create_lession' => 'reading#create_lession'  
+  get 'update_lession_form' => 'reading#update_lession_form'  
+  get 'update_lession' => 'reading#update_lession'  
+  get 'auto_translate' => 'reading#auto_translate'  
 end
