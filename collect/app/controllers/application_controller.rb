@@ -137,7 +137,9 @@ class ApplicationController < ActionController::Base
     return nil if word.blank?
     level = JlptWord.where("word = ?", search_word).map(&:level).max || 1
 
-    vocab = Vocabulary.new
+
+    vocab = Vocabulary.where("kanji = ? and kana = ?", word[:kanji], word[:kana]).first
+    vocab = Vocabulary.new if vocab.blank?
     vocab.kanji       = word[:kanji]
     vocab.kana        = word[:kana]
     vocab.cn_mean     = word[:cn_mean]

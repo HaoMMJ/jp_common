@@ -73,4 +73,20 @@ class DictionaryController < ApplicationController
       import_to_vocabularies(w)
     end
   end
+
+  def fix_vocab_kana
+    Vocabulary.all.each do |w|
+      if w.kana.blank?
+        File.open("filtered_data/not_found/not_found_kana", 'a') do |f|
+          f.puts "#{w.id} #{w.kanji}"
+        end
+        next
+      end
+      kana =  w.kana.scan( /\p{Hiragana}+/ ).first
+      if kana.present?
+        w.kana = kana
+        w.save!
+      end
+    end
+  end
 end
