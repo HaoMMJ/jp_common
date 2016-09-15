@@ -49,8 +49,23 @@ class ApplicationController < ActionController::Base
     RawDictionary.create!(word: word, raw: raw, source: source)
   end
 
+  def get_kanji_mean(kanji)
+    #Manual create kanji
+  end
+
   def extract_mazii_raw(search_word, json)
-    kanji = 
+    data = json["data"]
+
+    word = data.select{|w| w["word"] == search_word}.first
+    if is_kanji(search_word)
+      kanji = search_word
+      kana = word["phonetic"]
+    else
+      kana = search_word
+      kanji = word["phonetic"]
+    end
+    cn_mean = kanji.present? ? get_kanji_mean(kanji) : ""
+    mean = word["means"].map{|w| w["mean"]}.join(",")
     vocabulary_object(kanji, kana, cn_mean, mean)
   end
 
@@ -72,6 +87,7 @@ class ApplicationController < ActionController::Base
   end
 
   def create_vocabulary_from_raw(dic_id, search_word, raw, source)
+    return nil unless is_japanese(search_word)
     json = raw.is_a?(String) ? eval(raw) : raw
     case source
     when "mazii"
