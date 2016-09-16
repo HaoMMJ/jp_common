@@ -45,5 +45,11 @@ Rails.application.routes.draw do
   get 'create_lession' => 'reading#create_lession'  
   get 'update_lession_form' => 'reading#update_lession_form'  
   get 'update_lession' => 'reading#update_lession'  
-  get 'auto_translate' => 'reading#auto_translate'  
+  get 'auto_translate_form' => 'reading#auto_translate_form'  
+  post 'auto_translate' => 'reading#auto_translate'  
+
+  #Fix 
+  get 'detect_vocabulary_error' => 'fix#detect_vocabulary_error'
+  get 'fix_vocabulary' => 'fix#fix_vocabulary'
+  get 'manual_fix_vocabulary' => 'fix#manual_fix_vocabulary'
 end

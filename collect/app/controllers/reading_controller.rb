@@ -33,7 +33,7 @@ class ReadingController < ApplicationController
     Vocabulary.all.each do |w|
       if w.kanji.present? && text.include?(w.kanji)
         words << { 
-          id: w.id
+          id: w.id,
           word: w.kanji,
           kana: w.kana,
           cn_mean: w.cn_mean,
@@ -43,7 +43,7 @@ class ReadingController < ApplicationController
       end
     end
     render json: { 
-      word_list = words
+      word_list: words
     }
   end
 
@@ -51,10 +51,14 @@ class ReadingController < ApplicationController
     text = params["search_text"]
     kanji_list = text.scan(/\p{Han}+/).uniq
     words = []
-    vocabs = Vocabulary.where("kanji ILIKE ANY ( array[?] )", kanji_list.map {|val| "%#{val}%" })
+    vocabs = []
+    kanji_list.each do |k|
+      found_words = Vocabulary.where("kanji like ?", "%#{k}%").order(:kanji).first
+      vocabs << found_words if found_words.present?
+    end
     vocabs.each do |w|
       words << { 
-        id: w.id
+        id: w.id,
         word: w.kanji,
         kana: w.kana,
         cn_mean: w.cn_mean,
@@ -63,7 +67,7 @@ class ReadingController < ApplicationController
       }
     end
     render json: { 
-      word_list = words
+      word_list: words
     }
   end
 end
