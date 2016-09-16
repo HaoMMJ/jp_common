@@ -27,26 +27,6 @@ class ReadingController < ApplicationController
   def auto_translate_form
   end
 
-  def auto_translate_1
-    text = params["search_text"]
-    words = []
-    Vocabulary.all.each do |w|
-      if w.kanji.present? && text.include?(w.kanji)
-        words << { 
-          id: w.id,
-          word: w.kanji,
-          kana: w.kana,
-          cn_mean: w.cn_mean,
-          mean: w.mean,
-          level: w.level
-        }
-      end
-    end
-    render json: { 
-      word_list: words
-    }
-  end
-
   def auto_translate
     text = params["search_text"]
     kanji_list = text.scan(/\p{Han}+/).uniq
@@ -54,16 +34,17 @@ class ReadingController < ApplicationController
     vocabs = []
     kanji_list.each do |k|
       found_words = Vocabulary.where("kanji like ?", "%#{k}%").order(:kanji).first
-      vocabs << found_words if found_words.present?
+      vocabs << [found_words, k] if found_words.present?
     end
-    vocabs.each do |w|
+    vocabs.each do |w, o|
       words << { 
         id: w.id,
         word: w.kanji,
         kana: w.kana,
         cn_mean: w.cn_mean,
         mean: w.mean,
-        level: w.level
+        level: w.level,
+        origin: o
       }
     end
     render json: { 
