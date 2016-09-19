@@ -45,7 +45,7 @@ class ReadingController < ApplicationController
         vocabs << [found_word, k]
       else  
         found_word = Vocabulary.where("kanji = ?", "#{k}").first
-        found_word = Vocabulary.where("kanji like ?", "%#{k}%").order(:kanji).first if found_word.blank?
+        found_word = Vocabulary.where("kanji like ?", "#{k}%").order(:kanji).first if found_word.blank?
         vocabs << [found_word, k]# if found_words.present?
       end  
     end
