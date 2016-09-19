@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   require "addressable/uri"
   require "romaji"
+  require 'mecab'
 
   def is_hiragana(w)
     !!(w =~ /^([\p{Hiragana}]*)$/)
@@ -16,7 +17,7 @@ class ApplicationController < ActionController::Base
   end
 
   def is_japanese(w)
-    !!(w =~ /^([\p{Hiragana}\p{Katakana}\p{Han}]*)$/)
+    !!(w =~ /^([\p{Hiragana}\p{Katakana}\p{Han}ー]*)$/)
   end
 
   def search_from_raw_dictionary(word)
@@ -180,6 +181,33 @@ class ApplicationController < ActionController::Base
           f.puts word
         end
       end
+    end
+  end
+
+  def detect_japanese(search_text)
+    tagger = MeCab::Tagger.new
+    text = tagger.parse(search_text)
+    lines = text.split("\n")
+    found_words = []
+    lines.each do |w|
+      next if w == "EOS"
+      line = w.split("\t")
+      word = line[0]
+      next if !is_japanese(word) || (is_hiragana(word) && word.length < 3)
+      reading = line[1].split(",").last.hiragana
+      found_words << [word, reading]
+    end
+    found_words.compact.uniq
+  end
+
+  def search_vocabulary(word)
+    if is_kanji(word)
+      Vocabulary.where("kanji = ?", "#{word}").first
+    else
+      Vocabulary.where("kana = ? and (kanji is null or kanji = '')", "#{word}").first
+      vocab = Vocabulary.where("kana = ? and (kanji is null or kanji = '')", "#{word}").first
+      vocab = Vocabulary.where(kana: word).first if vocab.blank?
+      vocab
     end
   end
 end
