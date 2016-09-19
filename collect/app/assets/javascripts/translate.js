@@ -40,7 +40,8 @@ $(function() {
       console.log(origin)
       // var temp_replace_text = "temp_" + i.toString().split('').join("_");
       var temp_replace_text = "temp_" + i + "_temp";
-      var text_edition  = "<div class='tooltip highlight'>"
+      var highlight_class = (!!word.word || !!word.kana) ? "highlight" : "not_found"
+      var text_edition  = "<div class='tooltip " + highlight_class +" '>";
       text_edition     += temp_replace_text;
       text_edition     += "<span class='tooltiptext'>";
       text_edition     += extract_meaning(word, temp_replace_text);
