@@ -55,4 +55,12 @@ class ReadingController < ApplicationController
       origin: o
     }
   end
+
+  def search_word
+    search_word = params["search_word"]
+    found_word = search_vocabulary(search_word)
+    render json: { 
+      word: found_word_json(found_word, search_word)
+    }
+  end
 end

@@ -37,4 +37,5 @@
   border: 1px solid;
   border-color: #3333FF;
   border-radius: 15px;
+  z-index: 1;
 }

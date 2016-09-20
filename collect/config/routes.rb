@@ -47,6 +47,7 @@ Rails.application.routes.draw do
   get 'update_lession' => 'reading#update_lession'  
   get 'auto_translate_form' => 'reading#auto_translate_form'  
   post 'auto_translate' => 'reading#auto_translate'  
+  get 'search_word' => 'reading#search_word'  
 
   #Fix 
   get 'detect_vocabulary_error' => 'fix#detect_vocabulary_error'

@@ -14,16 +14,26 @@ $(function() {
     }
     result_table += row;
     result_table += "</table>"
-    $("#search_word.kanji?").html(result_table);
+    $("#translation_result").html(result_table);
   }
 
-  function extract_meaning(word, temp_replace_text){
+  function extract_and_replace_meaning(word, temp_replace_text){
     if(word.word){
       var replace_text = (word.word == word.origin) ? temp_replace_text : word.word;
       return replace_text + " (" + word.kana + ") [" + word.cn_mean + "] <br/>" + word.mean;
     }else if(word.kana){
       var replace_text = (word.kana == word.origin) ? temp_replace_text : word.kana;
       return replace_text + ": " + word.mean;
+    }else{
+      return "not found";
+    }
+  }
+
+  function extract_meaning(word){
+    if(word.word){
+      return word.word + " (" + word.kana + ") [" + word.cn_mean + "] <br/>" + word.mean;
+    }else if(word.kana){
+      return word.kana + ": " + word.mean;
     }else{
       return "not found";
     }
@@ -37,14 +47,12 @@ $(function() {
     for(var i = 0; i < words.length; i++){
       var word = words[i];
       var origin = word.origin;
-      console.log(origin)
-      // var temp_replace_text = "temp_" + i.toString().split('').join("_");
       var temp_replace_text = "temp_" + i + "_temp";
       var highlight_class = (!!word.word || !!word.kana) ? "highlight" : "not_found"
       var text_edition  = "<div class='tooltip " + highlight_class +" '>";
       text_edition     += temp_replace_text;
       text_edition     += "<span class='tooltiptext'>";
-      text_edition     += extract_meaning(word, temp_replace_text);
+      text_edition     += extract_and_replace_meaning(word, temp_replace_text);
       text_edition     +="</span></div>";
 
       text_replace_memo.push({temp_text: temp_replace_text, origin_text: origin});
@@ -60,7 +68,6 @@ $(function() {
         text_replace_memo[j].origin_text
       );
     }
-    console.log(text_replace_memo);
     html += translate_text;
     html += "</div>";
     $("#translation_result").html(html);
@@ -87,7 +94,14 @@ $(function() {
     var text = "";
     if (window.getSelection) {
       var txt_selection = window.getSelection();
-      text = txt_selection.focusNode.textContent + txt_selection.anchorNode.textContent;
+
+      var focus_node_txt  = txt_selection.focusNode.textContent;
+      var anchor_node_txt = txt_selection.anchorNode.textContent;
+      if(focus_node_txt == anchor_node_txt){
+        text = window.getSelection().toString();  
+      }else{
+        text = focus_node_txt + anchor_node_txt;
+      }
     } else if (document.selection && document.selection.type != "Control") {
       text = document.selection.createRange().text;
     }
@@ -106,7 +120,13 @@ $(function() {
     var x = e.clientX;
     var y = e.clientY;
     placeTooltip(x, y);
-    $("#tooltip").html(getSelectionText());
+    // $("#tooltip").html(getSelectionText());
+    var params = {};
+    params.search_word = getSelectionText();
+    $.get( "/search_word", params ).done(function( data ) {
+      var found_word = data.word;
+      $("#tooltip").html(extract_meaning(found_word));
+    });
     $("#tooltip").show();
   })
 });
