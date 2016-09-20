@@ -14,7 +14,7 @@ $(function() {
     }
     result_table += row;
     result_table += "</table>"
-    $("#traslation_result").html(result_table);
+    $("#search_word.kanji?").html(result_table);
   }
 
   function extract_meaning(word, temp_replace_text){
@@ -63,7 +63,7 @@ $(function() {
     console.log(text_replace_memo);
     html += translate_text;
     html += "</div>";
-    $("#traslation_result").html(html);
+    $("#translation_result").html(html);
   }
 
   function translate(search_text){
@@ -82,4 +82,31 @@ $(function() {
     var search_text = $(this).val();
     translate(search_text);
   });
+
+  function getSelectionText() {
+    var text = "";
+    if (window.getSelection) {
+      var txt_selection = window.getSelection();
+      text = txt_selection.focusNode.textContent + txt_selection.anchorNode.textContent;
+    } else if (document.selection && document.selection.type != "Control") {
+      text = document.selection.createRange().text;
+    }
+    return text;
+  }
+
+  function placeTooltip(x_pos, y_pos) {
+    var d = document.getElementById('tooltip');
+    d.style.position = "absolute";
+    d.style.left = x_pos + 'px';
+    d.style.top = y_pos + 'px';
+  }
+
+  $("#tooltip").hide();
+  $('#translation_result').mouseup(function (e) {
+    var x = e.clientX;
+    var y = e.clientY;
+    placeTooltip(x, y);
+    $("#tooltip").html(getSelectionText());
+    $("#tooltip").show();
+  })
 });

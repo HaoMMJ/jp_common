@@ -26,3 +26,15 @@
   background-color: yellow;
   border: 1px solid grey;
 }
+
+#tooltip {
+  background-color: #EEE;
+  display: inline-block;
+  padding-top: 5px;
+  padding-right: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  border: 1px solid;
+  border-color: #3333FF;
+  border-radius: 15px;
+}
