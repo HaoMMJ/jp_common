@@ -90,6 +90,13 @@ $(function() {
     translate(search_text);
   });
 
+  $(document).keypress(function(e) {
+    console.log(e.which);
+    if(e.which == 13 || e.which == 32) {
+      translate($("#search_text").val());
+    }
+  });
+
   function getSelectionText() {
     var text = "";
     if (window.getSelection) {
