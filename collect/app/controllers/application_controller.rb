@@ -194,8 +194,11 @@ class ApplicationController < ActionController::Base
       line = w.split("\t")
       word = line[0]
       next if !is_japanese(word) || (is_hiragana(word) && word.length < 3)
-      reading = line[1].split(",").last.hiragana
-      found_words << [word, reading]
+      content = line[1].split(",")
+      word_type = content.first
+      reading = content.last.hiragana
+      jishokei = content[-3]
+      found_words << [word, reading, word_type, jishokei]
     end
     found_words.compact.uniq
   end
