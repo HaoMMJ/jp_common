@@ -127,7 +127,6 @@ $(function() {
     var x = e.clientX;
     var y = e.clientY;
     placeTooltip(x, y);
-    // $("#tooltip").html(getSelectionText());
     var params = {};
     params.search_word = getSelectionText();
     $.get( "/search_word", params ).done(function( data ) {
@@ -135,5 +134,5 @@ $(function() {
       $("#tooltip").html(extract_meaning(found_word));
     });
     $("#tooltip").show();
-  })
+  });
 });

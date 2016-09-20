@@ -53,4 +53,7 @@ Rails.application.routes.draw do
   get 'detect_vocabulary_error' => 'fix#detect_vocabulary_error'
   get 'fix_vocabulary' => 'fix#fix_vocabulary'
   get 'manual_fix_vocabulary' => 'fix#manual_fix_vocabulary'
+
+  #Full Dictionary
+  get 'filter_full_dictionary' => 'vocabulary#filter_full_dictionary'
 end
