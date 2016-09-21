@@ -20,6 +20,10 @@ class ApplicationController < ActionController::Base
     !!(w =~ /^([\p{Hiragana}\p{Katakana}\p{Han}ー]*)$/)
   end
 
+  def contains_japanese(w)
+    !!(w =~ /([\p{Hiragana}\p{Katakana}\p{Han}ー]+)/)
+  end
+
   def search_from_raw_dictionary(word)
     raw = RawDictionary.where("word = ?", word).first
     raw.try(:raw)

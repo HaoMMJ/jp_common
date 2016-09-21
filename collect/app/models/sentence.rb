@@ -1,3 +1,3 @@
 class Sentence < ApplicationRecord
-  belongs_to :vocabulary
+  belongs_to :mean
 end

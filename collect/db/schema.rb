@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160915054756) do
+ActiveRecord::Schema.define(version: 20160921075505) do
 
   create_table "dic_vocabs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "dictionary_id"
@@ -65,10 +65,23 @@ ActiveRecord::Schema.define(version: 20160915054756) do
     t.integer "word_id"
   end
 
+  create_table "means", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "vocabulary_id"
+    t.text    "content",       limit: 65535
+    t.index ["vocabulary_id"], name: "index_means_on_vocabulary_id", using: :btree
+  end
+
   create_table "raw_dictionaries", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "word"
     t.text   "raw",    limit: 65535
     t.string "source",               default: "mazii"
+  end
+
+  create_table "sentences", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "mean_id"
+    t.text    "content",     limit: 65535
+    t.text    "translation", limit: 65535
+    t.index ["mean_id"], name: "index_sentences_on_mean_id", using: :btree
   end
 
   create_table "vocabularies", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

@@ -42,18 +42,21 @@ Rails.application.routes.draw do
   get 'update_course_form' => 'reading#update_course_form'
   post 'update_course' => 'reading#update_course'
   get 'create_lession_form' => 'reading#create_lession_form'
-  get 'create_lession' => 'reading#create_lession'  
-  get 'update_lession_form' => 'reading#update_lession_form'  
-  get 'update_lession' => 'reading#update_lession'  
-  get 'auto_translate_form' => 'reading#auto_translate_form'  
-  post 'auto_translate' => 'reading#auto_translate'  
-  get 'search_word' => 'reading#search_word'  
+  get 'create_lession' => 'reading#create_lession'
+  get 'update_lession_form' => 'reading#update_lession_form'
+  get 'update_lession' => 'reading#update_lession'
+  get 'auto_translate_form' => 'reading#auto_translate_form'
+  post 'auto_translate' => 'reading#auto_translate'
+  get 'search_word' => 'reading#search_word'
 
-  #Fix 
+  #Fix
   get 'detect_vocabulary_error' => 'fix#detect_vocabulary_error'
   get 'fix_vocabulary' => 'fix#fix_vocabulary'
   get 'manual_fix_vocabulary' => 'fix#manual_fix_vocabulary'
 
   #Full Dictionary
   get 'filter_full_dictionary' => 'vocabulary#filter_full_dictionary'
+  get 'filter_duplicate_hiragana' => 'vocabulary#filter_duplicate_hiragana'
+  get 'last_filter_hiragana' => 'vocabulary#last_filter_hiragana'
+  get 'insert_hiragana' => 'vocabulary#insert_hiragana'
 end

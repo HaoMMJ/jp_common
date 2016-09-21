@@ -1,23 +1,139 @@
 # -*- coding: utf-8 -*-
 class VocabularyController < ApplicationController
-  
+
   def filter_full_dictionary
     collect = []
+
     File.open("raw_data/full_dictionary/hiragana", 'r') do |f1|
       File.open("filtered_data/dictionary/hiragana", 'w') do |f2|
         while line = f1.gets
-          words = line.scan(/「 (.*?) 」/).flatten
-          words.each do |w|
-            # f2.puts w
-            collect << w
+          # words = line.scan(/「 (.*?) 」/).flatten
+          line_content = line.split('##')[1]
+          next if line_content.blank?
+          content = line_content.split('#')
+          # next unless content[0].japanese?
+          original_word = content[0].split("  ")
+          hiragana = original_word[0]
+          kanji    = original_word[1]
+          kanji    = kanji.present? ? kanji.scan(/「 (.*?) 」/).flatten.first : ""
+          meanings = content[1].scan(/\|=(.*?)\|/).flatten.reject{|c| c.blank?}
+          first_word = {}
+          first_word[:hiragana] = hiragana
+          first_word[:kanji]    = kanji
+          first_word[:meanings] = []
+          is_first_word = true
+          temp_word = {}
+          temp_word[:meanings] = []
+          next_words = []
+
+          meanings.each.with_index(1) do |word, index|
+            check_kanji = word =~ /「(.*)」/
+            if !!(check_kanji)
+              is_first_word = false
+            end
+            if is_first_word
+              first_word[:meanings] << word
+            else
+              if(!!check_kanji)
+                temp_word[:kanji] = word.scan(/「 (.*?) 」/).flatten.first
+                temp_word[:hiragana] = (check_kanji > 0) ? word.split("  ")[0] : hiragana
+              else
+                temp_word[:meanings] << word
+              end
+              if index == meanings.length || !!(meanings[index] =~ /「(.*)」/)
+                next_words << temp_word
+                temp_word = {}
+                temp_word[:meanings] = []
+              end
+            end
           end
-          # binding.pry
-          # break
+
+          calculation_words = [first_word, next_words].flatten
+          calculation_words.each do |w|
+            output_txt = "#{w[:kanji]}    #{w[:hiragana]}    #{w[:meanings].join('|')}"
+            f2.puts output_txt
+          end
         end
-        vobs = Vocabulary.all.map(&:kanji)
-        special = vobs.compact.uniq - collect.uniq
-        special.each do |kanji|
-          f2.puts kanji
+      end
+    end
+  end
+
+  def filter_duplicate_hiragana
+    kanji_list = []
+    kana_list  = []
+    lines      = []
+    count = 1
+    File.open("filtered_data/dictionary/hiragana", 'r') do |f1|
+      while line = f1.gets
+        content = line.split("    ")
+        kanji = content[0]
+        kana  = content[1]
+        if kanji.present? || kana.present?
+          kanji_list << kanji
+          kana_list  << kana
+          lines << count
+        end
+        count += 1
+      end
+    end
+
+    if kana_list.length == kana_list.length
+      File.open("filtered_data/dictionary/duplicate", 'w') do |f2|
+        kanji_list.each.with_index(0) do |k, index|
+          if kana_list.include?(k) && k.hiragana?
+            f2.puts "#{k} #{kana_list[index]} #{lines[index]}"
+          end
+        end
+      end
+    end
+  end
+
+  def last_filter_hiragana
+    duplicate_words = []
+    File.open("filtered_data/dictionary/duplicate", 'r') do |f|
+      while line = f.gets
+        kana = line.split(" ")[0]
+        duplicate_words << kana
+      end
+    end
+
+    File.open("filtered_data/dictionary/hiragana", 'r') do |f1|
+      File.open("filtered_data/dictionary/last_hiragana", 'w') do |f2|
+        while line = f1.gets
+          content = line.split("    ")
+          kanji = content[0]
+          unless duplicate_words.include? kanji
+            f2.puts line
+          end
+        end
+      end
+    end
+  end
+
+  def insert_hiragana
+    ActiveRecord::Base.transaction do
+      File.open("filtered_data/dictionary/used_hiragana", 'r') do |f|
+        while line = f.gets
+          content = line.split("    ")
+          kanji = content[0]
+          kana  = content[1]
+          # meanings = content[2].split("|")
+          raw = content[2]
+          vocab = Vocabulary.where("kanji = ? and kana = ?", kanji, kana).first
+          if vocab.blank?
+            vocab = Vocabulary.new
+            vocab.kanji = kanji
+            vocab.kana  = kana
+            vocab.raw   = raw
+            vocab.level = 1
+            vocab.from_source = "full_dictionary"
+            vocab.save!
+          else
+            if vocab.raw.blank?
+              vocab.raw = raw
+              vocab.save!
+            end
+          end
         end
       end
     end
