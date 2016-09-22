@@ -58,6 +58,9 @@ class VocabularyController < ApplicationController
     end
   end
 
+  def filter_katakana
+  end
+
   def filter_duplicate_hiragana
     kanji_list = []
     kana_list  = []
@@ -136,6 +139,22 @@ class VocabularyController < ApplicationController
           end
         end
       end
+    end
+  end
+
+  def update_hiragana_meaning
+    vobs = Vocabulary.where("mean is null or mean = ''")
+    vobs.each do |v|
+      means = v.means.map(&:content)
+      v.mean = means.join("; ")
+      v.save!
+    end
+  end
+
+  def import_hiragana_missing_word
+    m = ["蔽う", "蓋う", "膏", "兆(きざ)す", "充て", "宛て", "中て", "閉ざされる", "患える"]
+    m.each do |w|
+      import_to_vocabularies(w)
     end
   end
 end
