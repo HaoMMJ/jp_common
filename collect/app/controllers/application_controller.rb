@@ -76,13 +76,14 @@ class ApplicationController < ActionController::Base
   def extract_mazii_json(search_word, json)
     data = json["data"]
 
-    word = data.select{|w| w["word"] == search_word}.first
     if is_kanji(search_word)
+      word = data.select{|w| w["word"] == search_word}.first
       kanji = search_word
       kana = word["phonetic"]
     else
+      word = data.select{|w| w["phonetic"] == search_word}.first
       kana = search_word
-      kanji = word["phonetic"]
+      kanji = word["word"]
     end
     cn_mean = kanji.present? ? get_kanji_mean(kanji) : ""
     mean = word["means"].map{|w| w["mean"]}.join(",")
@@ -166,7 +167,8 @@ class ApplicationController < ActionController::Base
       missing_in_raw_dictionary = data.blank?
       source = 'mazii'
       data = search_from_mazi(word) if data.blank?
-      if data.blank? || !eval(data)["found"]
+      data = data.is_a?(String) ? eval(data) : data
+      if data.blank? || !data["found"]
         data = search_from_jisho(word)
         source = 'jisho'
       end

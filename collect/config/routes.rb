@@ -61,4 +61,7 @@ Rails.application.routes.draw do
   get 'insert_hiragana' => 'vocabulary#insert_hiragana'
   get 'insert_missing_raw' => 'vocabulary#insert_missing_raw'
   get 'insert_hiragana_meaning' => 'vocabulary#insert_hiragana_meaning'
+  get 'update_hiragana_meaning' => 'vocabulary#update_hiragana_meaning'
+  get 'import_hiragana_missing_word' => 'vocabulary#import_hiragana_missing_word'
+  get 'filter_katakana' => 'vocabulary#filter_katakana'
 end
