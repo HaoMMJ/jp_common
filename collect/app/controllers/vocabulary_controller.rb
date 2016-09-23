@@ -111,13 +111,13 @@ class VocabularyController < ApplicationController
   end
 
   def insert_hiragana
+    count = 0
     ActiveRecord::Base.transaction do
       File.open("filtered_data/dictionary/used_hiragana", 'r') do |f|
         while line = f.gets
           content = line.split("    ")
           kanji = content[0]
           kana  = content[1]
-          # meanings = content[2].split("|")
           raw = content[2]
           vocab = Vocabulary.where("kanji = ? and kana = ?", kanji, kana).first
           if vocab.blank?
@@ -134,7 +134,87 @@ class VocabularyController < ApplicationController
               vocab.save!
             end
           end
+          puts count
+          count += 1
         end
+      end
+    end
+  end
+
+  def insert_missing_raw
+    count = 0
+    ActiveRecord::Base.transaction do
+      File.open("filtered_data/dictionary/used_hiragana", 'r') do |f|
+        while line = f.gets
+          content = line.split("    ")
+          kanji = content[0]
+          kana  = content[1]
+          raw = content[2]
+          vocab = Vocabulary.where("kanji = ? and kana = ? and raw is null", kanji, kana).first
+          if vocab.present? && raw.present?
+            vocab.raw = raw
+            vocab.save!
+          end
+        end
+      end
+    end
+  end
+
+  def insert_hiragana_meaning
+    count = 0
+    ActiveRecord::Base.transaction do
+      vocabs = Vocabulary.where("raw is not null")
+      vocabs.each do |v|
+        means = v.raw.split("|")  
+        temp_mean = []
+        temp_sentences = []
+        temp_means = []
+        is_sentence = false
+        means.each.with_index(1) do |m, index|
+          if contains_japanese(m)
+            is_sentence = true
+            temp_sentences << m
+          else
+            if is_sentence == true
+              mean = Mean.create!(vocabulary_id: v.id, content: temp_mean.join(","))
+              temp_sentences.each do |s|
+                cont = s.split(":")
+                Sentence.create!( mean_id: mean.id, content: cont[0], translation: cont[1])
+              end
+              # temp_means << [temp_mean, temp_sentences]
+              temp_mean = []
+              temp_sentences = []
+              finish_collect = false
+            end
+            if !is_lower(m)
+              # v.cn_mean = m.scan(/[[:word:]]+/u).first
+              # v.save!
+              next
+            else
+              temp_mean << m
+            end
+            is_sentence = false
+          end
+          if index == means.length 
+            mean = Mean.create!(vocabulary_id: v.id, content: temp_mean.join(","))
+            temp_sentences.each do |s|
+              cont = s.split(":")
+              Sentence.create!( mean_id: mean.id, content: cont[0], translation: cont[1])
+            end
+            
+            # binding.pry if count == 2
+            # temp_means << [temp_mean, temp_sentences]
+            temp_mean = []
+            temp_sentences = []
+            finish_collect = false
+          end
+        end
+        puts count
+        count += 1
+        # if v.id == 646
+        #   binding.pry
+        #   break
+        # end
       end
     end
   end

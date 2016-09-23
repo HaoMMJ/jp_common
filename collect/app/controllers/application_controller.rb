@@ -217,4 +217,12 @@ class ApplicationController < ActionController::Base
       vocab
     end
   end
+
+  def is_upper(word)
+    !!/[[:upper:]]/.match(word)
+  end
+
+  def is_lower(word)
+    !!/[[:lower:]]/.match(word)
+  end
 end
