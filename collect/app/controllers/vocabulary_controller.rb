@@ -71,7 +71,14 @@ class VocabularyController < ApplicationController
             collect << [words, count].flatten
           end
 
-          f2.puts "#{words[0]}_#{words[1]}_#{meanings[0]}    #{meanings[1..-1].join("    ")}"
+          
+          # f2.puts "#{count}" if !is_lower(meanings[0])
+          mean_list = meanings[1..-1].select{|m| m.split("|+").length == 1}
+          examples  = meanings[1..-1].select{|m| m.split("|+").length > 1}
+          means = [meanings[0], mean_list].flatten.join("; ")
+          f2.puts "#{words[0]}_#{words[1]}_#{means}    #{examples.join("    ")}"
+          # f2.puts "#{mean_list.join('    ')} #{count}" if mean_list.present?
+          # f2.puts "#{meanings[0]} #{count}" if meanings[0].length < 5
           count += 1
         end
       end
@@ -81,7 +88,7 @@ class VocabularyController < ApplicationController
       collect.each do |w|
         word = w[0]
         if means.include? word
-          f3.puts "#{w[0]} #{w[1]} #{w[2]} #{means.detect{|x| x == word}}"
+          f3.puts w[2]
         end
       end
     end
