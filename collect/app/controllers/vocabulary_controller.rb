@@ -60,13 +60,28 @@ class VocabularyController < ApplicationController
 
   def filter_katakana
     collect = []
-
+    count = 1
     File.open("raw_data/full_dictionary/katakana", 'r') do |f1|
       File.open("filtered_data/dictionary/katakana", 'w') do |f2|
         while line = f1.gets
           line_content = line.split('#')
-          binding.pry
-          break
+          words = line_content[2].split("  ")
+          meanings = line_content[3].split("|=").map{|s| s.strip}.select{|m| m.present?}
+          if words.length > 1
+            collect << [words, count].flatten
+          end
+
+          f2.puts "#{words[0]}_#{words[1]}_#{meanings[0]}    #{meanings[1..-1].join("    ")}"
+          count += 1
+        end
+      end
+    end
+    File.open("filtered_data/dictionary/check_dup_katakana", 'w') do |f3|
+      means = collect.map{|w| w[1]}
+      collect.each do |w|
+        word = w[0]
+        if means.include? word
+          f3.puts "#{w[0]} #{w[1]} #{w[2]} #{means.detect{|x| x == word}}"
         end
       end
     end
