@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160921075505) do
+ActiveRecord::Schema.define(version: 20160924120509) do
 
   create_table "dic_vocabs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "dictionary_id"
@@ -40,8 +40,9 @@ ActiveRecord::Schema.define(version: 20160921075505) do
 
   create_table "jlpt_words", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string  "word"
-    t.text    "raw",   limit: 65535
+    t.text    "raw",     limit: 65535
     t.integer "level"
+    t.string  "reading"
   end
 
   create_table "kanji_dictionaries", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -49,6 +50,7 @@ ActiveRecord::Schema.define(version: 20160921075505) do
     t.string "kanji_mean"
     t.text   "mean",       limit: 65535
     t.string "onyomi"
+    t.text   "raw",        limit: 65535
   end
 
   create_table "kanji_samples", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

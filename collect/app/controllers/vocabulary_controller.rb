@@ -59,6 +59,17 @@ class VocabularyController < ApplicationController
   end
 
   def filter_katakana
+    collect = []
+
+    File.open("raw_data/full_dictionary/katakana", 'r') do |f1|
+      File.open("filtered_data/dictionary/katakana", 'w') do |f2|
+        while line = f1.gets
+          line_content = line.split('#')
+          binding.pry
+          break
+        end
+      end
+    end
   end
 
   def filter_duplicate_hiragana
@@ -231,10 +242,123 @@ class VocabularyController < ApplicationController
     end
   end
 
-  def import_hiragana_missing_word
-    m = ["蔽う", "蓋う", "膏", "兆(きざ)す", "充て", "宛て", "中て", "閉ざされる", "患える"]
-    m.each do |w|
-      import_to_vocabularies(w)
+  def remove_hiragana_duplicate
+    a = Vocabulary.where("kanji is not null and kanji != ''").map(&:kanji).select{|v| v.present?}
+    w = a.select{|w| a.count(w) > 1}
+    x = []
+    y = []
+    count = 0
+    w.each do |z|
+      l = Vocabulary.where("kanji = ?", z)
+      if l.length == 2 && l[0].kana != l[1].kana
+        x << z
+      elsif l.length == 3 && l[0].kana != l[1].kana && l[1].kana != l[2].kana && l[0].kana != l[2].kana
+        x << z
+      end
+      # puts count
+      # count += 1
+    end 
+    count = 0
+    puts "start"
+    n = w - x
+    binding.pry
+    m = n.select{|v| l = Vocabulary.where("kanji = ?", v); l.map(&:kana).uniq.length != l.length}
+    m.each do |v|
+      # binding.pry
+      # l = Vocabulary.where("kanji = ?", v)
+      # if l.length == 2 && l[0].kana == l[1].kana && l[0].kanji == l[1].kanji && l[0].mean == l[1].mean
+      #   if l[0].raw.present?
+      #     l[1].destroy
+      #   else
+      #     l[0].destroy
+      #   end
+      # end
+      puts count
+      binding.pry
+      count+=1
+    end 
+  end
+
+
+  def fix_blank_kana
+    k = Vocabulary.where("kana is null or kana = ''").map(&:kanji).uniq
+    need_check = []
+    recheck = []
+    ActiveRecord::Base.transaction do
+      k.each do |w|
+        vs = Vocabulary.where(kanji: w)
+        keep = vs.detect{|x| x.kana.present?}
+        if vs.length > 1 && keep.present?
+          vs.each do |nr|
+            if nr.id != keep.id && nr.kana.blank?
+              nr.destroy
+            end
+          end
+        else
+          need_check << w
+        end
+      end
+
+      tagger = MeCab::Tagger.new
+      need_check.each do |w|
+        text = tagger.parse(w)
+        lines = text.split("\n")
+        if lines.length == 2
+          kana = lines.first.split(",")[-2].hiragana
+          vocabs = Vocabulary.where("kanji = ?", w)
+          vocabs.each do |x|
+            if kana.blank?
+              x.kana = kana
+              x.save!
+            end
+          end
+        else
+          recheck << w
+        end
+      end
+
+      binding.pry
+    end
+  end
+
+  def update_vocabulary_level
+    ActiveRecord::Base.transaction do
+      JlptWord.all.each do |w|
+        word = w.word
+        level = w.level
+        kana = w.reading
+        if only_kana(word)
+          vocabs = Vocabulary.where("(kanji is null or kanji = '') and kana = ?", kana)
+        else
+          vocabs = Vocabulary.where("(kanji = ? and kana = ?", word, kana)
+        end  
+        binding.pry if vocabs.length == 0
+        vocabs.each do |v|
+          v.level = level
+          v.save!
+        end
+      end
+
+      binding.pry
+
+      JlptKanji.all.each do |k|
+        kanji = k.kanji
+        level = k.level
+        vocabs = Vocabulary.where("(kanji = ?", kanji)
+        binding.pry if vocabs.length == 0
+        vocabs.each do |v|
+          v.level = level
+          v.save!
+        end
+      end
+    end
+  end
+
+  def update_vocabulary_kanji
+    vocabs = Vocabulary.where("kanji is not null and kanji != ''")
+    vocabs.each do |w|
+      w.cn_mean = get_kanji_mean(kanji)
+      w.save!
     end
   end
 end

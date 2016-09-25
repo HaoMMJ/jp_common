@@ -64,4 +64,14 @@ Rails.application.routes.draw do
   get 'update_hiragana_meaning' => 'vocabulary#update_hiragana_meaning'
   get 'import_hiragana_missing_word' => 'vocabulary#import_hiragana_missing_word'
   get 'filter_katakana' => 'vocabulary#filter_katakana'
+  get 'remove_hiragana_duplicate' => 'vocabulary#remove_hiragana_duplicate'
+  get 'fix_blank_kana' => 'vocabulary#fix_blank_kana'
+  get 'update_vocabulary_level' => 'vocabulary#update_vocabulary_level'
+  get 'update_vocabulary_kanji' => 'vocabulary#update_vocabulary_kanji'
+
+  #kanji dictionary
+  get 'filter_yoyo_kanji' => 'kanji_dictionary#filter_yoyo_kanji'
+  get 'import_yoyo_kanji_raw' => 'kanji_dictionary#import_yoyo_kanji_raw'
+  get 'update_yoyo_kanji' => 'kanji_dictionary#update_yoyo_kanji'
+  get 'fix_yoyo_kanji' => 'kanji_dictionary#fix_yoyo_kanji'
 end
