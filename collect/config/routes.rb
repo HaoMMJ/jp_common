@@ -59,6 +59,7 @@ Rails.application.routes.draw do
   get 'filter_duplicate_hiragana' => 'vocabulary#filter_duplicate_hiragana'
   get 'last_filter_hiragana' => 'vocabulary#last_filter_hiragana'
   get 'insert_hiragana' => 'vocabulary#insert_hiragana'
+  get 'insert_katakana' => 'vocabulary#insert_katakana'
   get 'insert_missing_raw' => 'vocabulary#insert_missing_raw'
   get 'insert_hiragana_meaning' => 'vocabulary#insert_hiragana_meaning'
   get 'update_hiragana_meaning' => 'vocabulary#update_hiragana_meaning'

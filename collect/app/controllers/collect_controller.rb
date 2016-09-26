@@ -153,19 +153,50 @@ class CollectController < ApplicationController
   end
 
   def jlpt_insert
-    1.upto(5) do |level|
-      File.open("filtered_data/words/n#{level}", 'r') do |f1|
-        while line = f1.gets
-          word = line.gsub("\n",'')
-          JlptWord.create!(word: word, level: level) if word.present?
+    ActiveRecord::Base.transaction do
+      1.upto(5) do |level|
+        File.open("filtered_data/words/fixed_n#{level}", 'r') do |f1|
+          while line = f1.gets
+            line_content = line.gsub("\n",'')
+            content = line_content.split("    ")
+            # JlptWord.create!(word: word, level: level) if word.present?
+            if content.length > 1
+              word = content[0]
+              reading = content[1]
+              if word.contains_kanji?
+                if reading.contains_kanji?
+                  puts "HERE"
+                  binding.pry
+                else
+                  JlptWord.create!(word: word, reading: reading, level: level)
+                end
+              else
+                puts "HERE1"
+                binding.pry
+              end
+            else
+              word = content[0]
+              if word.contains_kanji?
+                puts "HERE2"
+                binding.pry
+              else
+                if word.present?
+                  JlptWord.create!(reading: word, level: level)
+                else
+                  puts "HERE3"
+                  binding.pry
+                end
+              end
+            end
+          end
         end
-      end
 
-      File.open("filtered_data/kanji/n#{level}", 'r') do |f2|
-        while line = f2.gets
-          word = line.gsub("\n",'')
-          JlptKanji.create!(kanji: word, level: level) if word.present?
-        end
+        # File.open("filtered_data/kanji/n#{level}", 'r') do |f2|
+        #   while line = f2.gets
+        #     word = line.gsub("\n",'')
+        #     JlptKanji.create!(kanji: word, level: level) if word.present?
+        #   end
+        # end
       end
     end
   end

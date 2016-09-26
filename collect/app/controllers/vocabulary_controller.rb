@@ -177,6 +177,62 @@ class VocabularyController < ApplicationController
     end
   end
 
+  def insert_katakana
+    count = 0
+    ActiveRecord::Base.transaction do
+      File.open("filtered_data/dictionary/katakana", 'r') do |f|
+        while line = f.gets
+          content = line.split("    ")
+          mean = content[0].split("_").select{|x| x.present?}
+          examples = content[1..-1]
+          if mean.length > 2
+            if mean[0].contains_kanji?
+              word = mean[0]
+              reading = mean[1]
+            else
+              word = mean[1]
+              reading = mean[0]
+            end
+            meaning = mean[2].strip
+
+            vocab = Vocabulary.where("kanji = ? and kana = ?", word, reading).first
+            vocab = Vocabulary.new if vocab.blank?
+            vocab.kanji = word
+            vocab.kana  = reading
+            vocab.cn_mean = get_kanji_mean(word)
+            vocab.mean = meaning
+            vocab.save!
+          else
+            vocab = Vocabulary.where("kana = ?", mean[0]).first
+            vocab = Vocabulary.new if vocab.blank?
+            vocab.kana  = mean[0]
+            vocab.mean = mean[1].strip
+            vocab.save!
+          end
+
+          new_mean = Mean.new
+          new_mean.vocabulary_id = vocab.id
+          new_mean.content = meaning
+          new_mean.save!
+
+          examples.each do |e|
+            next if e.strip.blank?
+            example_content = e.split("|+")
+            sentence = Sentence.new
+            sentence.mean_id = new_mean.id
+            sentence.content = example_content[0].strip
+            binding.pry if example_content[1].blank?
+            sentence.translation = example_content[1].strip
+            sentence.save!
+          end
+
+          puts count
+          count += 1
+        end
+      end
+    end
+  end
+
   def insert_missing_raw
     count = 0
     ActiveRecord::Base.transaction do
@@ -345,42 +401,45 @@ class VocabularyController < ApplicationController
 
   def update_vocabulary_level
     ActiveRecord::Base.transaction do
-      JlptWord.all.each do |w|
-        word = w.word
-        level = w.level
-        kana = w.reading
-        if only_kana(word)
-          vocabs = Vocabulary.where("(kanji is null or kanji = '') and kana = ?", kana)
-        else
-          vocabs = Vocabulary.where("(kanji = ? and kana = ?", word, kana)
-        end  
-        binding.pry if vocabs.length == 0
-        vocabs.each do |v|
-          v.level = level
-          v.save!
+      File.open("filtered_data/not_found/jlpt", 'w') do |f2|
+        JlptWord.where("level > 1").each do |w|
+          word = w.word
+          level = w.level
+          kana = w.reading
+          unless word.present?
+            vocabs = Vocabulary.where("(kanji is null or kanji = '') and kana = ?", kana)
+          else
+            vocabs = Vocabulary.where("kanji = ? and kana = ?", word, kana)
+          end  
+          f2.puts "#{word}    #{kana}    #{level}" if vocabs.length == 0
+          vocabs.each do |v|
+            v.level = level
+            v.save!
+          end
         end
-      end
 
-      binding.pry
-
-      JlptKanji.all.each do |k|
-        kanji = k.kanji
-        level = k.level
-        vocabs = Vocabulary.where("(kanji = ?", kanji)
-        binding.pry if vocabs.length == 0
-        vocabs.each do |v|
-          v.level = level
-          v.save!
+        JlptKanji.where("level > 1").each do |k|
+          kanji = k.kanji
+          level = k.level
+          vocabs = Vocabulary.where("kanji = ?", kanji)
+          f2.puts "#{kanji}    #{level}"  if vocabs.length == 0
+          vocabs.each do |v|
+            v.level = level
+            v.save!
+          end
         end
       end
     end
   end
 
   def update_vocabulary_kanji
-    vocabs = Vocabulary.where("kanji is not null and kanji != ''")
-    vocabs.each do |w|
-      w.cn_mean = get_kanji_mean(kanji)
-      w.save!
+    ActiveRecord::Base.transaction do
+      vocabs = Vocabulary.where("kanji is not null and kanji != ''")
+      vocabs.each do |w|
+        next unless w.kanji.contains_kanji?
+        w.cn_mean = get_kanji_mean(w.kanji)
+        w.save!
+      end
     end
   end
 end
