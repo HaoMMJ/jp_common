@@ -77,11 +77,11 @@ class ApplicationController < ActionController::Base
     data = json["data"]
 
     if is_kanji(search_word)
-      word = data.select{|w| w["word"] == search_word}.first
+      word = data.select{|w| w["word"] == search_word && w["means"].first.present?}.first
       kanji = search_word
       kana = word["phonetic"]
     else
-      word = data.select{|w| w["phonetic"] == search_word}.first
+      word = data.select{|w| w["phonetic"] == search_word && w["means"].first.present?}.first
       kana = search_word
       kanji = word["word"]
     end
