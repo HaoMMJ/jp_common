@@ -227,7 +227,8 @@ class CollectController < ApplicationController
   end
 
   def filter
-    1.upto(5) do |level|
+    # 1.upto(5) do |level|
+    1.upto(3) do |level|
       filter_kana(level)
     end
   end
@@ -244,20 +245,26 @@ class CollectController < ApplicationController
     end  
   end
 
-  def only_kana(w)
-    !!(w =~ /^([\p{Hiragana}]*)$/)
-  end
-
   def filter_kana(level)
     File.open("raw_data/words/n#{level}", 'r') do |f1|
       File.open("filtered_data/words/n#{level}", 'w') do |f2|
-        count = 0
+        temp_word = []
         while line = f1.gets
-          if count % 2 == 0
-            f2.puts line 
-            next if only_kana(line)
+          temp_word << line.strip
+          if only_kana(line.strip)
+            if temp_word.length > 2
+              binding.pry
+              kana = temp_word[-1]
+              temp_word.each do |w|
+                if kana != w
+                  f2.puts "#{w}    #{kana}"
+                end
+              end
+            else
+              f2.puts temp_word.join("    ")
+            end
+            temp_word = []
           end
-          count += 1
         end
       end
     end  
