@@ -69,6 +69,8 @@ Rails.application.routes.draw do
   get 'fix_blank_kana' => 'vocabulary#fix_blank_kana'
   get 'update_vocabulary_level' => 'vocabulary#update_vocabulary_level'
   get 'update_vocabulary_kanji' => 'vocabulary#update_vocabulary_kanji'
+  get 'insert_missing_jlpt_kanji' => 'vocabulary#insert_missing_jlpt_kanji'
+  get 'insert_jlpt_kana_without_kanji' => 'vocabulary#insert_jlpt_kana_without_kanji'
 
   #kanji dictionary
   get 'filter_yoyo_kanji' => 'kanji_dictionary#filter_yoyo_kanji'
