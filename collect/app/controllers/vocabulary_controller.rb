@@ -505,4 +505,46 @@ class VocabularyController < ApplicationController
       end
     end
   end
+
+  def fix_jlpt_kana
+    check_list = []
+    mazii_list = []
+
+    File.open("filtered_data/not_found/check_jlpt_kana", 'r') do |f|
+      while line = f.gets
+        check_list << line.strip
+      end
+    end
+    File.open("filtered_data/not_found/check_mazii_jlpt_kana", 'r') do |f|
+      while line = f.gets
+        mazii_list << line.strip
+      end
+    end
+
+    # ActiveRecord::Base.transaction do
+      check_list.each.with_index(0) do |word, index|
+        content = word.split("    ")
+        kana    = content[0]
+        mean    = content[1]
+        confirm_word = mazii_list.detect{|m| m.split("    ")[0] == kana}
+        if confirm_word
+          if Vocabulary.where("(kanji = '' or kanji is null) and kana = ?", kana).first.nil?
+            found_word = Vocabulary.where("kana = ?", kana).first
+            vocab = Vocabulary.new
+            vocab.kana = kana
+            vocab.mean = mean
+            vocab.level = JlptWord.where("(word = '' or word is null) and reading = ?", kana).map(&:level).max || 1
+            puts "confirm"
+            puts "check_list mean: #{word}"
+            puts "mazii mean: #{confirm_word}"
+            puts "found word: #{found_word.kanji} #{found_word.kana} #{found_word.mean}"
+            binding.pry
+          end
+        else
+          puts "not confirm"
+          binding.pry
+        end
+      end
+    # end
+  end
 end

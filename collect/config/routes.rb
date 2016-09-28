@@ -72,6 +72,7 @@ Rails.application.routes.draw do
   get 'insert_missing_jlpt_kanji' => 'vocabulary#insert_missing_jlpt_kanji'
   get 'insert_jlpt_kana_without_kanji' => 'vocabulary#insert_jlpt_kana_without_kanji'
   get 'get_jlpt_kana_from_mazii' => 'vocabulary#get_jlpt_kana_from_mazii'
+  get 'fix_jlpt_kana' => 'vocabulary#fix_jlpt_kana'
 
   #kanji dictionary
   get 'filter_yoyo_kanji' => 'kanji_dictionary#filter_yoyo_kanji'
