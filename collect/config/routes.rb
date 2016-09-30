@@ -49,6 +49,11 @@ Rails.application.routes.draw do
   post 'auto_translate' => 'reading#auto_translate'
   get 'search_word' => 'reading#search_word'
 
+  #Detect
+  # get 'upload_detecting_image' => 'detect_image#upload_image'
+  get 'detecting_image_test' => 'detect_image#test'
+  post 'detect_text_image' => 'detect_image#detect_text_image'
+
   #Fix
   get 'detect_vocabulary_error' => 'fix#detect_vocabulary_error'
   get 'fix_vocabulary' => 'fix#fix_vocabulary'

@@ -3,6 +3,8 @@ class ApplicationController < ActionController::Base
   require "addressable/uri"
   require "romaji"
   require 'mecab'
+  require 'rmagick'
+  require 'base64'
 
   def is_hiragana(w)
     !!(w =~ /^([\p{Hiragana}]*)$/)
