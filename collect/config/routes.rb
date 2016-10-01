@@ -35,6 +35,7 @@ Rails.application.routes.draw do
   post 'update_dic_info/:id' => 'dictionary#update_dic_info', as: :dictionary_update
   post 'update_list' => 'dictionary#update_list'
   get 'import_data_to_vocabs' => 'dictionary#import_data_to_vocabs'
+  post 'update_dic_vocab' => 'dictionary#update_dic_vocab'
 
   #Reading
   get 'create_course_form' => 'reading#create_course_form'

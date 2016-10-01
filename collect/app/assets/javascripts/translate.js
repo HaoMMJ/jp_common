@@ -92,7 +92,7 @@ $(function() {
 
   $(document).keypress(function(e) {
     console.log(e.which);
-    if(e.which == 13 || e.which == 32) {
+    if(typeof enable_auto_translate != 'undefined' && (e.which == 13 || e.which == 32)) {
       translate($("#search_text").val());
     }
   });

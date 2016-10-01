@@ -12,6 +12,7 @@ class DictionaryController < ApplicationController
   end
 
   def update_list_form
+    binding.pry
     @dic = Dictionary.find(params[:id])
   end
 
@@ -24,41 +25,62 @@ class DictionaryController < ApplicationController
   end
  
   def update_list
-    vocab_ids  = DicVocab.where(dictionary_id: params["id"]).map(&:vocabulary_id)
-    vocabs     = Vocabulary.where('id in (?) and (kanji = ? or kana = ?)', vocab_ids, params['word'], params['word'])
-    if vocabs.length > 0
+    search_word = params['word']
+    if search_word.contains_kanji?
+      vocabs = Vocabulary.where('kanji = ?', search_word)
+    else
+      vocabs = Vocabulary.where('kana = ?', search_word)
+    end
+    vocab_ids  = DicVocab.where('dictionary_id = ? and vocabulary_id in (?)', params["id"], vocabs.map(&:id)).map(&:vocabulary_id)
+
+    
+    if vocab_ids.length > 0
       render json: { "existed" => true }
     else
-      data = search_from_raw_dictionary(params['word'])
-      missing_in_raw_dictionary = data.blank?
-      source = 'mazii'
-      data = search_from_mazi(params['word']) if data.blank?
-      if data.blank? || !eval(data)["found"]
-        data = search_from_jisho(params['word'])
-        source = 'jisho'
-      end
-
-      if data.blank? || data["data"].blank?
-        data = search_from_google(params['word'])
-        source = 'google'
-      end
-
-      if data.present?
-        json = data.is_a?(String) ? eval(data) : data
-        update_raw_dictionary(params['word'], data, source) if missing_in_raw_dictionary
-        new_word = import_new_word(params["id"], params['word'], json, source)
-        render json: { "not_found" => true } if new_word.blank?
-        render json: { 'result' => {
-            kanji:   new_word.kanji.to_s,
-            kana:    new_word.kana.to_s,
-            cn_mean: new_word.cn_mean.to_s,
-            mean:    new_word.mean.to_s,
-            level:   new_word.level.to_s
-          } 
-        }
+      if vocabs.length > 0
+        DicVocab.create!(dictionary_id: params["id"], vocabulary_id: vocabs.first.id) if vocabs.length == 1
+        render json: { 'result' => vocabs.map{|v| word_json(v)}}
       else
-        render json: { "not_found" => true }
+        puts "Vocabulary missing"
+        # binding.pry
+        # source = 'mazii'
+        # data = search_from_mazi(params['word']) if data.blank?
+        # if data.blank? || !eval(data)["found"]
+        #   data = search_from_jisho(params['word'])
+        #   source = 'jisho'
+        # end
+
+        # if data.blank? || data["data"].blank?
+        #   data = search_from_google(params['word'])
+        #   source = 'google'
+        # end
+
+        # if data.present?
+        #   json = data.is_a?(String) ? eval(data) : data
+        #   update_raw_dictionary(params['word'], data, source) if missing_in_raw_dictionary
+        #   new_word = import_new_word(params["id"], params['word'], json, source)
+        #   render json: { "not_found" => true } if new_word.blank?
+        #   render json: { 'result' => {
+        #       kanji:   new_word.kanji.to_s,
+        #       kana:    new_word.kana.to_s,
+        #       cn_mean: new_word.cn_mean.to_s,
+        #       mean:    new_word.mean.to_s,
+        #       level:   new_word.level.to_s
+        #     } 
+        #   }
+        # else
+          render json: { "not_found" => true }
+        # end
       end
+    end
+  end
+
+  def update_dic_vocab
+    success = DicVocab.create(dictionary_id: params["dic_id"], vocabulary_id: params["vocab_id"])
+    if success
+      render json: { "successfull" => "save successfully" }
+    else
+      render json: { "error_msg" => "Fail to save dic id #{params['dic_id']} , vocab id #{vocab_id}" }
     end
   end
 

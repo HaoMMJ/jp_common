@@ -303,4 +303,15 @@ class ApplicationController < ActionController::Base
       origin: o
     }
   end
+
+  def word_json(w)
+    { 
+      id: w.try(:id),
+      kanji: w.try(:kanji),
+      kana: w.try(:kana),
+      cn_mean: w.try(:cn_mean),
+      mean: w.try(:mean),
+      level: w.try(:level),
+    }
+  end
 end
