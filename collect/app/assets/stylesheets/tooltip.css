@@ -27,7 +27,7 @@
   border: 1px solid grey;
 }
 
-#tooltip {
+#tooltip, #preview_tooltip {
   background-color: #EEE;
   display: inline-block;
   padding-top: 5px;

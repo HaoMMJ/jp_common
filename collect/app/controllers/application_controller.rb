@@ -290,4 +290,17 @@ class ApplicationController < ActionController::Base
   def is_lower(word)
     !!/[[:lower:]]/.match(word)
   end
+
+  
+  def found_word_json(w, o)
+    { 
+      id: w.try(:id),
+      word: w.try(:kanji),
+      kana: w.try(:kana),
+      cn_mean: w.try(:cn_mean),
+      mean: w.try(:mean),
+      level: w.try(:level),
+      origin: o
+    }
+  end
 end

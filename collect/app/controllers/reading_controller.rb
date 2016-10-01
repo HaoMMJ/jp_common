@@ -44,18 +44,6 @@ class ReadingController < ApplicationController
     }
   end
 
-  def found_word_json(w, o)
-    { 
-      id: w.try(:id),
-      word: w.try(:kanji),
-      kana: w.try(:kana),
-      cn_mean: w.try(:cn_mean),
-      mean: w.try(:mean),
-      level: w.try(:level),
-      origin: o
-    }
-  end
-
   def search_word
     search_word = params["search_word"]
     found_word = search_vocabulary(search_word)
