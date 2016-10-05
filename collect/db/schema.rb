@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160924120509) do
+ActiveRecord::Schema.define(version: 20161005114457) do
 
   create_table "dic_vocabs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "dictionary_id"
@@ -60,6 +60,16 @@ ActiveRecord::Schema.define(version: 20160924120509) do
     t.string  "am_han"
     t.text    "meaning",       limit: 65535
     t.index ["jlpt_kanji_id"], name: "index_kanji_samples_on_jlpt_kanji_id", using: :btree
+  end
+
+  create_table "lessions", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string   "name"
+    t.text     "content",                    limit: 65535
+    t.integer  "level"
+    t.string   "content_image_file_name"
+    t.string   "content_image_content_type"
+    t.integer  "content_image_file_size"
+    t.datetime "content_image_updated_at"
   end
 
   create_table "meanings", unsigned: true, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

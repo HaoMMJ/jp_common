@@ -51,4 +51,11 @@ class ReadingController < ApplicationController
       word: found_word_json(found_word, search_word)
     }
   end
+
+  def convert_ppm_to_jpg
+    records = Dir.glob("./lession/*")
+    records.each.with_index(1) do |f, index|
+      system "convert -verbose -density 150 -trim #{f} -quality 100 -flatten -sharpen 0x1.0 lession_#{index}.jpg"
+    end
+  end
 end

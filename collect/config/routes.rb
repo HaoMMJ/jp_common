@@ -42,13 +42,14 @@ Rails.application.routes.draw do
   post 'create_course' => 'reading#create_course'
   get 'update_course_form' => 'reading#update_course_form'
   post 'update_course' => 'reading#update_course'
-  get 'create_lession_form' => 'reading#create_lession_form'
-  get 'create_lession' => 'reading#create_lession'
-  get 'update_lession_form' => 'reading#update_lession_form'
-  get 'update_lession' => 'reading#update_lession'
+  # get 'create_lession_form' => 'reading#create_lession_form'
+  # get 'create_lession' => 'reading#create_lession'
+  # get 'update_lession_form' => 'reading#update_lession_form'
+  # get 'update_lession' => 'reading#update_lession'
   get 'auto_translate_form' => 'reading#auto_translate_form'
   post 'auto_translate' => 'reading#auto_translate'
   get 'search_word' => 'reading#search_word'
+  get 'convert_ppm_to_jpg' => 'reading#convert_ppm_to_jpg'
 
   #Detect
   # get 'upload_detecting_image' => 'detect_image#upload_image'
@@ -85,4 +86,10 @@ Rails.application.routes.draw do
   get 'import_yoyo_kanji_raw' => 'kanji_dictionary#import_yoyo_kanji_raw'
   get 'update_yoyo_kanji' => 'kanji_dictionary#update_yoyo_kanji'
   get 'fix_yoyo_kanji' => 'kanji_dictionary#fix_yoyo_kanji'
+
+  #lession
+  get 'create_lession_form' => 'lession#create_form'
+  post 'create_lession' => 'lession#create'
+  get 'update_lession_form' => 'lession#update_form'
+  post 'update_lession' => 'lession#update'
 end

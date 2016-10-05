@@ -55,3 +55,4 @@ gem 'romaji'
 gem 'mecab'
 gem 'mojinizer'
 gem 'rmagick'
+gem "paperclip"
