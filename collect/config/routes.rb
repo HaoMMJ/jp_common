@@ -90,6 +90,6 @@ Rails.application.routes.draw do
   #lession
   get 'create_lession_form' => 'lession#create_form'
   post 'create_lession' => 'lession#create'
-  get 'update_lession_form' => 'lession#update_form'
+  get 'update_lession_form/:id' => 'lession#update_form'
   post 'update_lession' => 'lession#update'
 end

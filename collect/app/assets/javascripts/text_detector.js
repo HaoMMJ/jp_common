@@ -1,3 +1,4 @@
+var pic_real_width, pic_real_height;
 $(function() {
 
 	// Create variables (in this scope) to hold the API and image size
@@ -7,6 +8,11 @@ $(function() {
 	    x_pos,
 	    y_pos;
 
+  $("<img/>").load(function(){
+    pic_real_width = this.width,
+    pic_real_height = this.height;
+    console.log( 'W='+ pic_real_width +' H='+ pic_real_height);
+  }).attr("src", $("#target").attr("src"));
 	$('#target').Jcrop({
 	  onChange: updatePreview,
 	  onSelect: updatePreview
@@ -49,7 +55,7 @@ $(function() {
 	      for(var i = 0; i < word_list.length; i++){
 	      	var word = word_list[i];
 	      	translation += extract_meaning(word) + "<br/>"
-	      }	
+	      }
 	      $("#preview_tooltip").html(translation);
       }else{
       	$("#preview_tooltip").html("not found");
@@ -67,7 +73,6 @@ $(function() {
 	function getDetectorParams(){
 		return {
 			image_data: $("#preview")[0].toDataURL("image/jpeg", 1.0)
-			// image_data: $('#preview_pic').attr("src")
 		}
 	}
 
@@ -75,21 +80,18 @@ $(function() {
 	{
 	  var imageObj = $("#target")[0];
     var canvas = $("#preview")[0];
-    canvas.width = c.w;
-    canvas.height = c.h;
+    var ratio = pic_real_width / $("#target").width();
+    canvas.width = c.w * ratio;
+    canvas.height = c.h * ratio;
+
+    var offset_x = c.x * ratio;
+    var offset_y = c.y * ratio;
     var context = canvas.getContext("2d");
-    context.drawImage(imageObj, c.x, c.y, c.w, c.h, 0, 0, canvas.width, canvas.height);
+    context.drawImage(imageObj, offset_x, offset_y, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
     // var p = document.getElementById('preview');
     // p.style.position = "absolute";
     // p.style.left = x_pos + 'px';
-    // p.style.top = (y_pos - 200) + 'px';
-
-    // $('#preview_pic').attr("src", $("#preview")[0].toDataURL("image/jpeg", 1.0));
-
-    // var d = document.getElementById('preview_pic');
-    // d.style.position = "absolute";
-    // d.style.left = x_pos + 'px';
-    // d.style.top = y_pos + 'px';
+    // p.style.top = (y_pos - 100) + 'px';
   };
 
   function extract_meaning(word){

@@ -1,1 +1,24 @@
-h1 Update lession
+h1 Create Lession
+= form_for(:lession, url: update_lession_path, method: :POST) do |f|
+  table width="100%"
+    tr
+      td Name
+      td
+        = f.text_field :name
+    tr
+      td Level
+      td
+        = f.text_field :level
+    tr
+      td width="100px" Content
+      td width="600px"
+        #detector_container
+          = image_tag @lession.content_image.url, width: "600", alt: "Image", id: "target"
+          canvas#preview
+          #preview_tooltip
+
+      td width="600px"
+        = f.text_area :content, class: "compare_text_area"
+    tr
+      td
+        = f.submit "Save"

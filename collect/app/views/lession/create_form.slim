@@ -1,1 +1,19 @@
 h1 Create Lession
+= form_for(:lession, url: create_lession_path, method: :POST) do |f|
+  table
+    tr
+      td Name
+      td
+        = f.text_field :name
+    tr
+      td Level
+      td
+        = f.text_field :level
+    tr
+      td Image
+      td
+        = f.file_field :content_image
+    tr
+      td
+        = f.submit "Save"
+
