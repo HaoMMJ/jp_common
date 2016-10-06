@@ -12,7 +12,6 @@ class DictionaryController < ApplicationController
   end
 
   def update_list_form
-    binding.pry
     @dic = Dictionary.find(params[:id])
   end
 
