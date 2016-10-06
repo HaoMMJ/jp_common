@@ -41,35 +41,27 @@ class DictionaryController < ApplicationController
         render json: { 'result' => vocabs.map{|v| word_json(v)}}
       else
         puts "Vocabulary missing"
-        # binding.pry
-        # source = 'mazii'
-        # data = search_from_mazi(params['word']) if data.blank?
-        # if data.blank? || !eval(data)["found"]
-        #   data = search_from_jisho(params['word'])
-        #   source = 'jisho'
-        # end
+        
+        source = 'mazii'
+        data = search_from_mazi(params['word'])
+        if data.blank? || !data["found"]
+          data = search_from_jisho(params['word'])
+          source = 'jisho'
+        end
 
-        # if data.blank? || data["data"].blank?
-        #   data = search_from_google(params['word'])
-        #   source = 'google'
-        # end
+        if data.blank? || data["data"].blank?
+          data = search_from_google(params['word'])
+          source = 'google'
+        end
 
-        # if data.present?
-        #   json = data.is_a?(String) ? eval(data) : data
-        #   update_raw_dictionary(params['word'], data, source) if missing_in_raw_dictionary
-        #   new_word = import_new_word(params["id"], params['word'], json, source)
-        #   render json: { "not_found" => true } if new_word.blank?
-        #   render json: { 'result' => {
-        #       kanji:   new_word.kanji.to_s,
-        #       kana:    new_word.kana.to_s,
-        #       cn_mean: new_word.cn_mean.to_s,
-        #       mean:    new_word.mean.to_s,
-        #       level:   new_word.level.to_s
-        #     }
-        #   }
-        # else
+        if data.present?
+          json = data.is_a?(String) ? eval(data) : data
+          new_word = import_new_word(params["id"], params['word'], json, source)
+          render json: { "not_found" => true } if new_word.blank?
+          render json: { 'result' => [word_json(new_word)] }
+        else
           render json: { "not_found" => true }
-        # end
+        end
       end
     end
   end
