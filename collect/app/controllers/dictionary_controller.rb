@@ -22,7 +22,7 @@ class DictionaryController < ApplicationController
     @dic.level = dic_params["level"]
     @dic.save!
   end
- 
+
   def update_list
     search_word = params['word']
     if search_word.contains_kanji?
@@ -32,7 +32,7 @@ class DictionaryController < ApplicationController
     end
     vocab_ids  = DicVocab.where('dictionary_id = ? and vocabulary_id in (?)', params["id"], vocabs.map(&:id)).map(&:vocabulary_id)
 
-    
+
     if vocab_ids.length > 0
       render json: { "existed" => true }
     else
@@ -65,7 +65,7 @@ class DictionaryController < ApplicationController
         #       cn_mean: new_word.cn_mean.to_s,
         #       mean:    new_word.mean.to_s,
         #       level:   new_word.level.to_s
-        #     } 
+        #     }
         #   }
         # else
           render json: { "not_found" => true }
