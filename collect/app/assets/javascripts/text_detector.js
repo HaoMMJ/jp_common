@@ -26,15 +26,8 @@ $(function() {
 	});
 
 	$('#detector_container').mouseup(function (e) {
-	  x_pos = e.clientX;
-	  y_pos = e.clientY;
-	  // var params = {};
-
-	  // // params.search_image = JSON.stringify($("#preview")[0].toDataURL());
-	  // params.search_image = $("#preview")[0].toDataURL();
-	  // $.post( "/detect_text_image", params ).done(function( data ) {
-	  //   debugger;
-	  // });
+    x_pos = e.pageX;
+    y_pos = e.pageY;
 
 	  textDecteror();
 	})
@@ -95,12 +88,13 @@ $(function() {
   };
 
   function extract_meaning(word){
+    console.log('extract_meaning ', word);
     if(word.word){
       return word.word + " (" + word.kana + ") [" + word.cn_mean + "] <br/>" + word.mean;
     }else if(word.kana){
       return word.kana + ": " + word.mean;
     }else{
-      return "not found";
+      return word.origin + ": not found";
     }
   }
 });

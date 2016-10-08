@@ -82,13 +82,14 @@ $(function() {
       }else{
         createVocabRow(vocab);
       }
+      $('#vocabulary_selection').empty();
     });
   }
 
   $("#search").change(function(){
     search_word = $(this).val();
     $(this).val("");
-
+    $('#search_info').empty();
     console.log(search_word);
     search_and_update(search_word);
   });

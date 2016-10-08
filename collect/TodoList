@@ -28,3 +28,7 @@ sudo cp jpn.traineddata /usr/share/tesseract-ocr/tessdata/
 tesseract myscan.png out -l jpn
 #convert from ppm to jpg keep quality
 convert -verbose -density 150 -trim image-186.ppm -quality 100 -flatten -sharpen 0x1.0 try.jpg
+
+#remove noise around text
+convert test.JPG -level 0,75% test1_level.JPG
+convert test.JPG -sigmoidal-contrast 10,50% test1_level.JPG

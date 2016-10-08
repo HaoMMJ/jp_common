@@ -19,7 +19,8 @@ class ApplicationController < ActionController::Base
   end
 
   def is_kanji(w)
-    !is_katakana(w) && !is_hiragana(w)
+    # !is_katakana(w) && !is_hiragana(w)
+    w.contains_kanji?
   end
 
   def is_japanese(w)
@@ -84,13 +85,20 @@ class ApplicationController < ActionController::Base
     data = json["data"]
 
     if is_kanji(search_word)
-      word = data.select{|w| w["word"] == search_word && w["means"].first.present?}.first
+      word = data.select{|w| 
+        w["means"].first.present? &&
+        (is_kanji(w["word"]) && w["word"] == search_word || is_kanji(w["phonetic"]) && w["phonetic"] == search_word) 
+
+      }.first
       kanji = search_word
-      kana = word["phonetic"]
+      kana = is_kanji(word["word"]) ? word["phonetic"] : word["word"]
     else
-      word = data.select{|w| w["phonetic"] == search_word && w["means"].first.present?}.first
+      word = data.select{|w| 
+        w["means"].first.present? &&
+        (!is_kanji(w["word"]) && w["word"] == search_word || !is_kanji(w["phonetic"]) && w["phonetic"] == search_word) 
+      }.first
       kana = search_word
-      kanji = word["word"]
+      kanji = is_kanji(word["word"]) ? word["word"] : word["phonetic"]
     end
     cn_mean = kanji.present? ? get_kanji_mean(kanji) : ""
     mean = word["means"].map{|w| w["mean"]}.join(",")
