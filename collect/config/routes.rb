@@ -92,4 +92,6 @@ Rails.application.routes.draw do
   post 'create_lession' => 'lession#create'
   get 'update_lession_form/:id' => 'lession#update_form', as: :update_lession_form
   post 'update_lession' => 'lession#update'
+  get 'lessions' => 'lession#list'
+  get 'detecting_image/:id' => 'lession#detecting_image', as: :detecting_image
 end

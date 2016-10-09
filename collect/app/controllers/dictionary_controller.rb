@@ -57,10 +57,10 @@ class DictionaryController < ApplicationController
         if data.present?
           json = data.is_a?(String) ? eval(data) : data
           new_word = import_new_word(params["id"], params['word'], json, source)
-          render json: { "not_found" => true } if new_word.blank?
           render json: { 'result' => [word_json(new_word)] }
         else
-          render json: { "not_found" => true }
+          # render json: { "not_found" => true }
+          render json: { 'result' => [word_json(search_word)] }
         end
       end
     end

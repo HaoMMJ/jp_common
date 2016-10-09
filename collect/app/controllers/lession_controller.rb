@@ -33,6 +33,25 @@ class LessionController < ApplicationController
   end
 
   def update
+    p  = params["lession"]
+    @lession = Lession.find(p[:id])
+    if @lession.present?
+      content = p[:content].gsub(/\r/, '')
+      @lession.content = content
+      @lession.level = p[:level]
+      @lession.save!
+      redirect_to update_lession_form_path(@lession.id)
+    else
+      render action: :create_form
+    end
+  end
+
+  def list
+    @lessions = Lession.all
+  end
+
+  def detecting_image
+    @lession = Lession.find(params[:id])
   end
 
   private

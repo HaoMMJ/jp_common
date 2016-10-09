@@ -1,0 +1,6 @@
+- @lessions.each do |l|
+  a href="#{update_lession_form_path(l.id)}" target="_blank" 
+    = l.name  
+  a href="#{detecting_image_path(l.id)}" target="_blank"   
+    = "#{l.name} Image"
+  br
