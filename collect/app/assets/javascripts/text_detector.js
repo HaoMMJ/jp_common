@@ -12,6 +12,10 @@ $(function() {
     pic_real_width = this.width,
     pic_real_height = this.height;
     console.log( 'W='+ pic_real_width +' H='+ pic_real_height);
+
+    var viewPortWidth = $( window ).width();
+    console.log(' viewPortWidth ' , viewPortWidth)
+    // $("#target").width(viewPortWidth);
   }).attr("src", $("#target").attr("src"));
 	$('#target').Jcrop({
 	  onChange: updatePreview,
@@ -29,7 +33,13 @@ $(function() {
     x_pos = e.pageX;
     y_pos = e.pageY;
 
-	  textDecteror();
+    if($("#preview")[0].width > 0){
+	    textDecteror();
+      $("#preview_tooltip").show();
+    }else{
+      $("#preview_tooltip").hide();
+      $("#preview_tooltip").empty();
+    }
 	})
 
 	function textDecteror(){
