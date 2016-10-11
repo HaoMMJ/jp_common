@@ -262,20 +262,30 @@ class ApplicationController < ActionController::Base
   end
 
   def detect_japanese(search_text)
-    tagger = MeCab::Tagger.new
-    text = tagger.parse(search_text)
-    lines = text.split("\n")
     found_words = []
-    lines.each do |w|
-      next if w == "EOS"
-      line = w.split("\t")
-      word = line[0]
-      next if !is_japanese(word) || (is_hiragana(word) && word.length < 3)
-      content = line[1].split(",")
-      word_type = content.first
-      reading = content.last.hiragana
-      jishokei = content[-3]
-      found_words << [word, reading, word_type, jishokei]
+    search_text.gsub!(' ','')
+    if search_text.kana?
+      custom_txt = search_text.gsub("つ","っ")
+      custom_txt.gsub!("ツ","ッ")
+      found_words << [custom_txt, custom_txt, "", custom_txt]
+      found_words << [search_text, search_text, "", search_text]
+    else
+      tagger = MeCab::Tagger.new
+      text = tagger.parse(search_text)
+      lines = text.split("\n")
+      
+      lines.each do |w|
+        next if w == "EOS"
+        line = w.split("\t")
+        word = line[0]
+        next if !is_japanese(word) || (is_hiragana(word) && word.length < 3)
+        content = line[1].split(",")
+        word_type = content.first
+        reading = content.last.hiragana
+        jishokei = content[-3]
+        found_words << [word, reading, word_type, jishokei]
+      end
+      
     end
     found_words.compact.uniq
   end
