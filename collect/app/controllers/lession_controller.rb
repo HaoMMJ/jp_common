@@ -37,6 +37,7 @@ class LessionController < ApplicationController
     @lession = Lession.find(p[:id])
     if @lession.present?
       content = p[:content].gsub(/\r/, '')
+      @lession.name = p[:name]
       @lession.content = content
       @lession.level = p[:level]
       @lession.save!
@@ -47,7 +48,7 @@ class LessionController < ApplicationController
   end
 
   def list
-    @lessions = Lession.all
+    @lessions = Lession.all.sort_by{|l| l.name.to_i}
   end
 
   def detecting_image
