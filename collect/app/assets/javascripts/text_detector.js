@@ -15,7 +15,8 @@ $(function() {
 
     var viewPortWidth = $( window ).width();
     console.log(' viewPortWidth ' , viewPortWidth)
-    $("#target").width(viewPortWidth);
+    if(typeof fitScreen != 'undefined')
+      $("#target").width(viewPortWidth);
     setupJcrop();
   }).attr("src", $("#target").attr("src"));
 	
