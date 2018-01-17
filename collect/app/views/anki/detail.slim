@@ -1,0 +1,31 @@
+h1 Input
+= text_field_tag :anki_input
+#anki_search_info style="color:red;" Input some JP text and see magical
+#anki_vocabulary_selection
+
+h1 List
+#anki_vocalbularies
+  table#anki_dictionary_tbl
+    tr  
+      td style="width: 20px" Order
+      td style="width: 150px" Word
+      td style="width: 250px" Reading
+      td style="width: 100px" KanjiMean
+      td style="width: 400px" MaziiMean
+      td style="width: 400px" JishoMean
+      td style="width: 400px" UsedMeaning
+    - @vocabs.each.with_index(1) do |w, index|
+      tr
+        td= index
+        td
+          = w.word
+        td
+          = w.reading
+        td
+          = w.kanji_meaning
+        td
+          = w.mazii_meaning
+        td 
+          = w.jisho_meaning  
+        td
+          = w.used_meaning

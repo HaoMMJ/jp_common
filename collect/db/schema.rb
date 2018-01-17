@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161005114457) do
+ActiveRecord::Schema.define(version: 20180114095255) do
+
+  create_table "anki_vocabularies", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string   "word"
+    t.string   "reading"
+    t.string   "kanji_meaning"
+    t.string   "jisho_meaning"
+    t.text     "mazii_meaning", limit: 65535
+    t.string   "used_meaning"
+    t.datetime "created_at",                  default: '2018-01-14 09:47:59', null: false
+    t.datetime "updated_at",                  default: '2018-01-14 09:48:00', null: false
+  end
 
   create_table "dic_vocabs", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "dictionary_id"
@@ -99,11 +110,12 @@ ActiveRecord::Schema.define(version: 20161005114457) do
   create_table "vocabularies", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string  "kanji"
     t.string  "kana"
-    t.text    "raw",         limit: 65535
-    t.text    "cn_mean",     limit: 65535
-    t.text    "mean",        limit: 65535
+    t.text    "raw",           limit: 65535
+    t.text    "cn_mean",       limit: 65535
+    t.text    "mean",          limit: 65535
     t.integer "level"
-    t.string  "from_source",               default: "mazii"
+    t.string  "from_source",                 default: "mazii"
+    t.boolean "get_full_kana",               default: false,   null: false
   end
 
   create_table "words", unsigned: true, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|

@@ -10,7 +10,7 @@ class DetectImageController < ApplicationController
   	image_data = Base64.decode64(preview_picture_data['data:image/jpeg;base64,'.length..-1])
     file = Tempfile.new(['detect_img_', '.jpeg'])
     File.open(file, 'wb') { |f| f.write(image_data) }
-    # system "cp #{file.path} ~/jp_common/collect/"
+    # system "cp #{file.path} /home/hao/project/jp_common/collect/test.jpg"
     system "tesseract #{file.path} out -l jpn"
     found_txt = []
     File.open("out.txt", 'r') do |f1|
@@ -21,7 +21,6 @@ class DetectImageController < ApplicationController
     end
 
     words = []
-
     found_txt.each do |f|
       list = detect_japanese(f)
       list.each do |w|

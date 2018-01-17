@@ -36,6 +36,7 @@ Rails.application.routes.draw do
   post 'update_list' => 'dictionary#update_list'
   get 'import_data_to_vocabs' => 'dictionary#import_data_to_vocabs'
   post 'update_dic_vocab' => 'dictionary#update_dic_vocab'
+  get  'generate_quizlet/:id' => 'dictionary#generate_quizlet', as: :generate_quizlet
 
   #Reading
   get 'create_course_form' => 'reading#create_course_form'
@@ -94,4 +95,9 @@ Rails.application.routes.draw do
   post 'update_lession' => 'lession#update'
   get 'lessions' => 'lession#list'
   get 'detecting_image/:id' => 'lession#detecting_image', as: :detecting_image
+
+  #anki
+  get  'anki' => 'anki#detail'
+  post 'update_anki' => 'anki#update'
+  post 'update_anki_vocab' => 'anki#update_anki_vocab'
 end

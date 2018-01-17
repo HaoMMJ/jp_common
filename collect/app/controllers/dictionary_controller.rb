@@ -21,6 +21,7 @@ class DictionaryController < ApplicationController
     @dic.name = dic_params["name"]
     @dic.level = dic_params["level"]
     @dic.save!
+    redirect_to dictionary_detail_path(@dic.id)
   end
 
   def update_list
@@ -99,6 +100,19 @@ class DictionaryController < ApplicationController
       if kana.present?
         w.kana = kana
         w.save!
+      end
+    end
+  end
+
+  def generate_quizlet
+    @dic = Dictionary.find(params[:id])
+    File.open("filtered_data/dictionary/shinkanzen", 'w') do |f|
+      @dic.vocabularies.each do |v|
+        if v.kanji.present?
+          f.puts "#{v.kanji} (#{v.kana}),(#{v.cn_mean}) #{v.mean}"
+        else
+          f.puts "#{v.kana},#{v.mean}"
+        end
       end
     end
   end

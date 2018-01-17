@@ -19,3 +19,15 @@
 
 # Ignore Byebug command history file.
 .byebug_history
+*.sql
+*.txt
+*.jpg
+lession_jpg/
+filtered_data/dictionary/shinkanzen
+db/schema.rb
+../jlpt/
+../import.rb
+../*.sql
+../15000
+../16092016.sql
+../23092016.sql
